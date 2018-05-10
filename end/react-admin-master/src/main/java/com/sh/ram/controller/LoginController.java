@@ -1,9 +1,17 @@
 package com.sh.ram.controller;
 
 import com.sh.ram.annotations.IgnoreAuth;
+import com.sh.ram.common.Constant;
+import com.sh.ram.common.R;
+import com.sh.ram.common.Utils;
 import com.sh.ram.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author sunh
@@ -19,6 +27,13 @@ public class LoginController {
     @IgnoreAuth
     public Object login(String userName, String password){
         return userService.login(userName, password);
+    }
+
+    @RequestMapping("/uploadImg")
+    @IgnoreAuth
+    public Object upload(MultipartFile file) throws IOException {
+        String s = Utils.saveFile(Constant.SAVE_TYPE_APP, file);
+        return R.ok(s);
     }
 }
 

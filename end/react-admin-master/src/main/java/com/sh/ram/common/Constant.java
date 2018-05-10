@@ -6,6 +6,28 @@ package com.sh.ram.common;
  */
 public class Constant {
 
+    /**
+     * 项目名
+     */
+    public static final String PROJECT_NAME = "ram";
+
+    /**
+     * 移动端文件,后台文件保存路径
+     */
+    public static final String APP_FILE_PATH = System.getProperty("user.home") + "/" + PROJECT_NAME + "/app/img/";
+    public static final String BACK_FILE_PATH = System.getProperty("user.home") + "/" + PROJECT_NAME + "/back/img/";
+
+    /**
+     * 返回给移动端,文件的访问路径,映射的路径
+     */
+    public static final String APP_IMG_URI = "/img/app";
+    public static final String BACK_IMG_URI = "/img/back";
+
+    /**
+     * 保存的路径type 1-移动端 2-后台
+     */
+    public static final int SAVE_TYPE_APP = 1;
+    public static final int SAVE_TYPE_BACK = 2;
 
     /**
      * 验证的token和用户的url权限以及用户id

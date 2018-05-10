@@ -32,6 +32,10 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         System.out.println("进入拦截器");
+        String requestURI = request.getRequestURI().replace(request.getContextPath(), "");
+//        if(StringUtils.equals(requestURI.substring(0, requestURI.lastIndexOf("/")), Constant.APP_IMG_URI)){
+//            return true;
+//        }
         if(! (handler instanceof HandlerMethod)){
             // 这里如果是浏览器跨域时发送的options请求handler不是HandlerMethod类型，所以我们直接放行,让spring boot处理这次options请求
             return true;
@@ -54,7 +58,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                 Date date = (Date) r.get("expireDate");
                 if (date.getTime() - new Date().getTime() > 0) {
                     // 判断用户访问的url是否在用户的请求权限中
-                    String requestURI = request.getRequestURI().replace(request.getContextPath(), "");
+
                     // 从缓存获取用户的uri集合
                     List uriList = (List)WebUtils.getSessionAttribute(request, Constant.AUTH_URI);
                     if(uriList == null){
@@ -78,6 +82,10 @@ public class AuthInterceptor implements HandlerInterceptor {
         throw new Rexception(APIReturnData.SERVER_CODE_10000, APIReturnData.STATUS_FAIL, APIReturnData.SERVER_MSG_10000);
     }
 
+    /**
+     * 在拦截器中若是出现异常,不会经过springboot的跨域设置，需要手动设置跨域
+     * @param response
+     */
     private void setCros(HttpServletResponse response){
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         response.setHeader("Access-Control-Allow-Credentials","true");

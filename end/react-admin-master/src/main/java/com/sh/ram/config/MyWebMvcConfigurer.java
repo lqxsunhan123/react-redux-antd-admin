@@ -3,6 +3,7 @@ package com.sh.ram.config;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.sh.ram.common.Constant;
 import com.sh.ram.interceptor.AuthInterceptor;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -25,7 +27,7 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(handlerInterceptor());
+        registry.addInterceptor(handlerInterceptor()).addPathPatterns("/**").excludePathPatterns("/img/**");
     }
 
     @Override
@@ -49,6 +51,16 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> handlers) {
+    }
+
+    /**
+     * 虚拟图片映射
+     * @param registry
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(Constant.APP_IMG_URI + "/**").addResourceLocations("file:" + Constant.APP_FILE_PATH);
+        registry.addResourceHandler(Constant.BACK_IMG_URI + "/**").addResourceLocations("file:" + Constant.BACK_FILE_PATH);
     }
 }
 

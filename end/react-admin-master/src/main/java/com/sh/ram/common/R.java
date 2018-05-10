@@ -10,17 +10,17 @@ public class R extends HashMap {
 
 
     private R(int code, int status, String msg, Object data){
-        this.put("code", code);
-        this.put("status", status);
-        this.put("msg", msg);
-        this.put("data", data);
+        super.put("code", code);
+        super.put("status", status);
+        super.put("msg", msg);
+        super.put("data", data);
     }
 
 
     public R(int code, int status, String msg){
-        this.put("code", code);
-        this.put("status", status);
-        this.put("msg", msg);
+        super.put("code", code);
+        super.put("status", status);
+        super.put("msg", msg);
     }
 
 
