@@ -1,6 +1,6 @@
 import axios from 'axios'
 import qs from 'qs'
-import {config} from '../constants/config'
+import {config, history} from '../constants/config'
 const instance = axios.create({
     baseURL: config.baseUrl,
     timeout: 100000,
@@ -12,8 +12,9 @@ const instance = axios.create({
     // }],
     transformRequest: [function (data) {
         // 对 data 进行任意转换处理
-        console.log(data);
+        // console.log(data);
         return qs.stringify(data);
+        // return data;
     }],
     withCredentials: true
 });
@@ -38,8 +39,10 @@ instance.interceptors.response.use(function (response) {
 });
 
 // 自定义的ajax请求方法，传入history对象方便路由
-const fetch = (history = {}, url = '', data = {}, handle, option = {}) => {
+const fetch = (url = '', data = {}, handle, option = {}) => {
     // 根据一些异常的响应代码做出动作
+    console.log(url);
+    console.log(data);
     return instance.post(url, data, option).then(r => {
         if(r.data.code == 10000){
             console.log("跳转首页")
@@ -48,6 +51,8 @@ const fetch = (history = {}, url = '', data = {}, handle, option = {}) => {
             history.replace("/");
         }
         handle(r)
+    }).catch((e) => {
+        alert(e);
     });
 }
 

@@ -42,8 +42,8 @@ class MyTab extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        tabs: state.tabs,
-        activeKey: state.activityKey,
+        tabs: state.tab.tabs,
+        activeKey: state.tab.activityKey,
         history: ownProps.history
     }
 }

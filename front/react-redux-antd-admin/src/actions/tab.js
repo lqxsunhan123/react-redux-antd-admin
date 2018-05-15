@@ -1,8 +1,8 @@
 export const addTab = (text, key, history) => (dispatch, getState) =>{
 
-    let tabs = getState().tabs;
+    let tabs = getState().tab.tabs;
     console.log(tabs);
-    let activiteTabs = tabs.filter(t => t.key==key);
+    let activiteTabs = tabs.filter(t => t.key == key);
     console.log("00000000000000000000000");
     console.log(activiteTabs)
     // 直接设置活动key
@@ -33,7 +33,7 @@ const remove = (o) => {
 }
 
 export const removeTab = (targetKey, history) => (dispatch, getState) => {
-    let o = findNextActivityTab(targetKey, getState().tabs)
+    let o = findNextActivityTab(targetKey, getState().tab.tabs)
     dispatch(remove(o));
     if(getState().activityKey == targetKey){
     dispatch(toggleTab(o.activityKey, history));

@@ -7,8 +7,8 @@ import {createStore, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux'
 import rootReducer from './reducers'
 import thunk from 'redux-thunk'
-const store = createStore(rootReducer, {activityKey: '/',collapsed:false, tabs: [{title: '首页', content: '', key: '/'}]}, applyMiddleware(thunk))
-// console.log(store.getState())
+const store = createStore(rootReducer, applyMiddleware(thunk))
+console.log(store.getState())
 // const mapStateToProps = (state) => {
 //     return state;
 // }
@@ -17,7 +17,7 @@ ReactDOM.render(
     <Provider store={store}><App /></Provider>
     , document.getElementById('root'));
 
-
+// {user:{}, tab:{activityKey: '/',collapsed:false, tabs: [{title: '首页', content: '', key: '/'}]}}
 
 
 registerServiceWorker();

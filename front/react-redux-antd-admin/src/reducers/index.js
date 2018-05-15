@@ -1,7 +1,8 @@
-import {tabs} from './tab'
-import {activityKey, collapsed} from './tab'
+import tab from './tab/index'
+import user from './user'
 import { combineReducers } from 'redux'
 
-export default combineReducers(
-    {tabs,activityKey,collapsed}
-)
+export default combineReducers({
+    tab: tab,
+    user: user
+})

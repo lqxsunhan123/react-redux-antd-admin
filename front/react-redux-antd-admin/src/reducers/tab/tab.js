@@ -1,4 +1,4 @@
-export const tabs = (state=[], action) => {
+export const tabs = (state=[{title: '首页', content: '', key: '/'}], action) => {
     switch (action.type){
         case 'ADD_TAB':
             console.log(state)
@@ -14,7 +14,7 @@ export const tabs = (state=[], action) => {
             return state;
     }
 }
-export const activityKey = (state='', action) => {
+export const activityKey = (state='/', action) => {
     switch (action.type){
         case 'TOGGLE_TAB':
             let path = action.activityKey.toString();
@@ -25,7 +25,7 @@ export const activityKey = (state='', action) => {
     }
 }
 
-export const collapsed = (state=false, action) => {
+export const collapsed = (state = false, action) => {
     switch (action.type){
         case 'TOGGLE':
             return !state

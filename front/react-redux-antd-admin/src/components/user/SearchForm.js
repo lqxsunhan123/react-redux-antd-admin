@@ -1,6 +1,8 @@
 import React from 'react';
 import '../../css/user.css';
 import {Form, Row, Col, Input, Button, Icon} from 'antd';
+import fetch from '../../utils/fetchUtils'
+import {connect} from 'react-redux'
 const FormItem = Form.Item;
 class AdvancedSearchForm extends React.Component {
     state = {
@@ -15,7 +17,10 @@ class AdvancedSearchForm extends React.Component {
         e.preventDefault();
         console.log(this.props)
         this.props.form.validateFields((err, values) => {
-            console.log('Received values of form: ', values);
+            console.log(values);
+            fetch("/user/list", values, (r) => {
+                console.log(r);
+            })
         });
     }
 
@@ -38,43 +43,24 @@ class AdvancedSearchForm extends React.Component {
                 onSubmit={this.handleSearch}
             >
                 <Row gutter={24}>
-                    <Col span={6}>
-                        <FormItem label='供应商'>
+                    <Col span={4}>
+                        <FormItem label='用户名'>
                             {
-                                getFieldDecorator('supplier', {
-                                    rules: [{
-                                        required: true,
-                                        message: 'Input something!',
-                                    }],
-                                })(<Input  placeholder="placeholder" style={{height: '40px'}}/>)
+                                getFieldDecorator('userName', {
+                                })(<Input  placeholder="用户名" />)
                             }
                         </FormItem>
                     </Col>
-                    <Col span={6}>
-                        <FormItem label='供应商2'>
+                    <Col span={4}>
+                        <FormItem label='姓名'>
                             {
-                                getFieldDecorator('supplier1', {
-                                    rules: [{
-                                        required: true,
-                                        message: 'Input something!',
-                                    }],
-                                })(<Input placeholder="placeholder" style={{height: '40px'}}/>)
+                                getFieldDecorator('name', {
+                                })(<Input placeholder="姓名"/>)
                             }
                         </FormItem>
                     </Col>
-                    <Col span={6}>
-                        <FormItem label='供应商3'>
-                            {
-                                getFieldDecorator('supplier2', {
-                                    rules: [{
-                                        required: true,
-                                        message: 'Input something!',
-                                    }],
-                                })(<Input placeholder="placeholder" style={{height: '40px'}}/>)
-                            }
-                        </FormItem>
-                    </Col>
-                    <Col span={6} style={{position:'relative',top:'40px'}}>
+
+                    <Col span={4} style={{position:'relative',top:'4px'}}>
                         <Button onClick={(e) => this.handleSearch(e)} style={{marginRight:10}}>Search</Button>
                         <Button onClick={this.handleReset}>
                             Clear
@@ -103,4 +89,19 @@ const WrappedAdvancedSearchForm = Form.create({
     }
 })(AdvancedSearchForm);
 
-export default WrappedAdvancedSearchForm;
+
+const mapStateToProps = (state, ownProps) => {
+    return {
+
+    }
+}
+//
+const mapDispatchToProps = (dispatch, ownProps) => ({
+
+})
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(WrappedAdvancedSearchForm)
+// export default WrappedAdvancedSearchForm;

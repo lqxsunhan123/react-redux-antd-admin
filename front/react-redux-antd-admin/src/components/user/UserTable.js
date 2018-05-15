@@ -4,6 +4,8 @@ import {Table} from 'antd';
 import {Pagination, Modal} from 'antd';
 import {Form, Row, Col, Input, Button, Radio} from 'antd';
 import {withRouter} from 'react-router'
+import {connect} from 'react-redux'
+import {getUsers} from '../../actions/user'
 import fetch from '../../utils/fetchUtils'
 const FormItem = Form.Item;
 const columns = [{
@@ -24,9 +26,6 @@ const columns = [{
 //         name: record.name,
 //     }),
 // };
-const pageObj = {
-    defaultPageSize: 5
-}
 
 class UserTable extends React.Component {
 
@@ -73,29 +72,30 @@ class UserTable extends React.Component {
     }
 
     handleTableChange = (pagination, filters, sorter) => {
-        console.log(pagination);
-        console.log(filters);
-        console.log(sorter);
-        const pager = {...this.state.pagination};
+        // console.log(pagination);
+        // console.log(filters);
+        // console.log(sorter);
+        const pager = {...this.props.user.pagination};
         pager.current = pagination.current;
-        this.setState({
-            pagination: pager,
-            loading: true
-        });
-        this.fetch({
-            pageSize: pagination.pageSize,
-            current: pagination.current,
-            sortField: sorter.field,
-            sortOrder: sorter.order,
-            ...filters,
-        });
+        // this.setState({
+        //     pagination: pager,
+        //     loading: true
+        // });
+        // this.fetch({
+        //     pageSize: pagination.pageSize,
+        //     current: pagination.current,
+        //     sortField: sorter.field,
+        //     sortOrder: sorter.order,
+        //     ...filters,
+        // });
+        console.log(pager);
+        this.props.getUsers(pager)
     }
     fetch = (params = {current: 1, pageSize: 5}) => {
-        const {history} = this.props;
         console.log("params: ")
         console.log(params);
         const pagination = {...this.state.pagination};
-        fetch(history, '/user/list', params, (r) => {
+        fetch('/user/list', params, (r) => {
             let obj = r.data.data;
             pagination.total = obj.total;
             if (this._isMounted) {
@@ -138,7 +138,7 @@ class UserTable extends React.Component {
 
     componentWillMount() {
         this._isMounted = true;
-        this.fetch();
+        this.props.getUsers();
     }
 
     componentWillUnmount() {
@@ -166,9 +166,9 @@ class UserTable extends React.Component {
                 <Button className="mybtn" onClick={this.showAdd}>Add</Button>
                 <Button className="mybtn" onClick={this.showEdit}>Edit</Button>
                 <Button className="mybtn">Add</Button>
-                <Table rowSelection={this.rowSelection} columns={columns} dataSource={this.state.data} bordered={true}
-                       pagination={this.state.pagination} onChange={this.handleTableChange}
-                       loading={this.state.loading}/>
+                <Table rowSelection={this.rowSelection} columns={columns} dataSource={this.props.user.data} bordered={true}
+                       pagination={this.props.user.pagination} onChange={this.handleTableChange}
+                       loading={this.props.user.loading}/>
             </div>
         );
     }
@@ -224,4 +224,18 @@ const WrappedAdvancedSearchForm = Form.create({
         </Form>
     )
 });
-export default withRouter(UserTable);
+const mapStateToProps = (state, ownProps) => {
+    return state;
+}
+//
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    // 获取用户的方法，接收分页器和查询参数
+    getUsers: (pagination = {defaultPageSize: 5, current: 1, pageSize: 5}, params = {}) => dispatch(getUsers(pagination, params)),
+})
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(UserTable)
+
+// export default withRouter(UserTable);

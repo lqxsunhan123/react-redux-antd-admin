@@ -19,11 +19,10 @@ class NormalLoginForm extends React.Component {
     }
 
     handleSubmit = (e) => {
-        const {history} = this.props;
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                fetch( history, '/login', values, (r) => {
+                fetch( '/login', values, (r) => {
                     console.log(r.data.status);
                     let map = r.data;
                     if (map.status == 1) {
