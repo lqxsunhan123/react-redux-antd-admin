@@ -12,9 +12,15 @@ const columns = [{
     title: '用户名',
     dataIndex: 'userName',
     render: text => <a href="javascript:;">{text}</a>,
+    width:300
 }, {
     title: 'ID',
     dataIndex: 'key',
+    width:100
+}, {
+    title: '姓名',
+    dataIndex: 'name',
+    width:100
 }];
 
 // const rowSelection = {
@@ -32,9 +38,6 @@ class UserTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: [],
-            loading: false,
-            pagination: {defaultPageSize: 5},
             visible: false,
             selectedRows: 0,
             objs: [],
@@ -152,7 +155,7 @@ class UserTable extends React.Component {
             console.log(this.state.flag)
             console.log("fields: " + fields);
         }
-
+        console.log("props--------------------------" + this.props.user.loading)
         return (
             <div>
                 <Modal
@@ -168,7 +171,7 @@ class UserTable extends React.Component {
                 <Button className="mybtn">Add</Button>
                 <Table rowSelection={this.rowSelection} columns={columns} dataSource={this.props.user.data} bordered={true}
                        pagination={this.props.user.pagination} onChange={this.handleTableChange}
-                       loading={this.props.user.loading}/>
+                       loading={this.props.user.loading}  />
             </div>
         );
     }
@@ -183,6 +186,7 @@ const WrappedAdvancedSearchForm = Form.create({
     onValuesChange(props, _value){
         console.log("onValuesChange:")
         console.log(props);
+        console.log(_value)
     },
     mapPropsToFields(props){
         console.log("mapPropsToFields:")
@@ -191,25 +195,29 @@ const WrappedAdvancedSearchForm = Form.create({
             id: Form.createFormField({
                 value: props.key
             }),
-            name: Form.createFormField({
+            userName: Form.createFormField({
                 value: props.userName
+            }),
+            name: Form.createFormField({
+                value: props.name
             }),
 
         }
     }
 })((props) => {
-    const {getFieldDecorator, getFieldsValue} = props.form;
+    const {getFieldDecorator, getFieldsValue, validateFields} = props.form;
+    console.log(validateFields)
     return (
-        <Form layout="vertical">
-            <FormItem label="姓名">
-                {getFieldDecorator('name', {
+        <Form layout="inline">
+            <FormItem label="用户名">
+                {getFieldDecorator('userName', {
                     rules: [{required: true, message: 'Please input the title of collection!'}],
                 })(
                     <Input />
                 )}
             </FormItem>
-            <FormItem label="ID">
-                {getFieldDecorator('id')(<Input type="textarea"/>)}
+            <FormItem label="姓名">
+                {getFieldDecorator('name')(<Input />)}
             </FormItem>
             <FormItem className="collection-create-form_last-form-item">
                 {getFieldDecorator('sex', {
@@ -230,7 +238,7 @@ const mapStateToProps = (state, ownProps) => {
 //
 const mapDispatchToProps = (dispatch, ownProps) => ({
     // 获取用户的方法，接收分页器和查询参数
-    getUsers: (pagination = {defaultPageSize: 5, current: 1, pageSize: 5}, params = {}) => dispatch(getUsers(pagination, params)),
+    getUsers: (pagination, params) => dispatch(getUsers(pagination, params)),
 })
 
 export default connect(

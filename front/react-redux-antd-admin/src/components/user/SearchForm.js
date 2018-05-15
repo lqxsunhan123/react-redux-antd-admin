@@ -1,8 +1,8 @@
 import React from 'react';
 import '../../css/user.css';
 import {Form, Row, Col, Input, Button, Icon} from 'antd';
-import fetch from '../../utils/fetchUtils'
 import {connect} from 'react-redux'
+import {getUsers} from '../../actions/user'
 const FormItem = Form.Item;
 class AdvancedSearchForm extends React.Component {
     state = {
@@ -18,9 +18,7 @@ class AdvancedSearchForm extends React.Component {
         console.log(this.props)
         this.props.form.validateFields((err, values) => {
             console.log(values);
-            fetch("/user/list", values, (r) => {
-                console.log(r);
-            })
+            this.props.getUsers({}, values);
         });
     }
 
@@ -97,7 +95,8 @@ const mapStateToProps = (state, ownProps) => {
 }
 //
 const mapDispatchToProps = (dispatch, ownProps) => ({
-
+    // 获取用户的方法，接收分页器和查询参数
+    getUsers: (pagination, params) => dispatch(getUsers(pagination, params)),
 })
 
 export default connect(

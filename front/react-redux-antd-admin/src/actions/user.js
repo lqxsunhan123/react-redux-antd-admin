@@ -15,10 +15,10 @@ const receiveUser = (data,  pagination) => {
 }
 
 
-export const getUsers = (pagination, params) => (dispatch, state) => {
+export const getUsers = (pagination = {defaultPageSize: 5, current: 1, pageSize: 5}, params = {}) => (dispatch, state) => {
     dispatch(requestUser(true));
     fetch('/user/list', {...pagination, ...params}, r => {
         dispatch(receiveUser(r.data.data.result, {...pagination, total: r.data.data.total}));
+        dispatch(requestUser(false));
     })
-    dispatch(requestUser(false));
 }

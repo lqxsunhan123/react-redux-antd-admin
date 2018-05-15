@@ -2,6 +2,8 @@ import { combineReducers } from 'redux'
 const loading = (state = false, action) => {
     switch(action.type){
         case 'REQUEST_USER':
+            console.log("*****************************")
+            console.log(action.loading);
             return action.loading;
         default:
             return state;
