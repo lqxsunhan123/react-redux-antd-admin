@@ -6,7 +6,7 @@ import {Form, Row, Col, Input, Button, Radio} from 'antd';
 import {withRouter} from 'react-router'
 import {connect} from 'react-redux'
 import {getUsers} from '../../actions/user'
-import fetch from '../../utils/fetchUtils'
+import {fetchPost, fetchGet} from '../../utils/fetchUtils'
 const FormItem = Form.Item;
 const columns = [{
     title: '用户名',
@@ -41,7 +41,9 @@ class UserTable extends React.Component {
             visible: false,
             selectedRows: 0,
             objs: [],
-            flag: ''
+            flag: '',
+            allRoleIds:[], // 所有的角色id
+            userRoleIds:[] // 用户选择的角色id
         }
     }
 
@@ -59,8 +61,11 @@ class UserTable extends React.Component {
         }),
     };
 
-    handleOk = () => {
-        console.log("ok");
+    handleOk = (obj) => {
+        fetchPost("/user/save", obj, r => {
+            console.log(r);
+
+        })
 
         this.setState({
             visible: false
@@ -98,7 +103,7 @@ class UserTable extends React.Component {
         console.log("params: ")
         console.log(params);
         const pagination = {...this.state.pagination};
-        fetch('/user/list', params, (r) => {
+        fetchPost('/user/list', params, (r) => {
             let obj = r.data.data;
             pagination.total = obj.total;
             if (this._isMounted) {
@@ -116,10 +121,24 @@ class UserTable extends React.Component {
         // })
     }
 
+    // 获取角色信息的方法,若传入了用户id，则还要查询用户对应的角色
+    getRoles = (id) => {
+        fetchGet("/user/getAllRoles", r => {
+        })
+        if(id){
+            fetchGet("/user/getUserRoleIds?userId=" + id, r => {
+                console.log(r)
+            })
+        }
+    }
+
     showAdd = () => {
         if (this.state.selectedRows > 1) {
             alert("只能选择一行")
         } else {
+            // 获取所有角色信息
+            this.getRoles(null);
+
             this.setState({
                 visible: true,
                 flag: 'add'
@@ -131,6 +150,7 @@ class UserTable extends React.Component {
         if (this.state.selectedRows > 1) {
             alert("只能选择一行")
         } else {
+            // 获取所有角色信息以及该用户现在的角色信息
             this.setState({
                 visible: true,
                 flag: 'edit'
@@ -158,14 +178,9 @@ class UserTable extends React.Component {
         console.log("props--------------------------" + this.props.user.loading)
         return (
             <div>
-                <Modal
-                    title="Basic Modal"
-                    visible={this.state.visible}
-                    onOk={this.handleOk}
-                    onCancel={this.handleCancel}
-                >
-                    <WrappedAdvancedSearchForm {...fields} />
-                </Modal>
+
+                    <WrappedAdvancedSearchForm visible={this.state.visible} handleOk={this.handleOk} handleCancel={this.handleCancel} flag={this.state.flag} />
+
                 <Button className="mybtn" onClick={this.showAdd}>Add</Button>
                 <Button className="mybtn" onClick={this.showEdit}>Edit</Button>
                 <Button className="mybtn">Add</Button>
@@ -174,6 +189,65 @@ class UserTable extends React.Component {
                        loading={this.props.user.loading}  />
             </div>
         );
+    }
+}
+
+class UserForm extends React.Component{
+
+    constructor(props){
+        super(props);
+        this.state = {
+        }
+    }
+
+    handleOk = () => {
+        const {handleOk} = this.props;
+        this.props.form.validateFields((e, obj) => {
+          if(!e){
+              handleOk(obj);
+          }
+        })
+    }
+
+    handleCancel = () => {
+        this.props.form.resetFields();
+        this.props.handleCancel();
+    }
+
+
+    render(){
+        const {getFieldDecorator} = this.props.form;
+        const{handleOk, handleCancel, flag} = this.props;
+
+        return (
+            <Modal
+                title="Basic Modal"
+                visible={this.props.visible}
+                onOk={this.handleOk}
+                onCancel={this.handleCancel}
+                width="700px"
+            >
+                <Form layout="inline">
+                    <FormItem label="用户名">
+                        {getFieldDecorator('userName', {
+                            rules: [{required: true, message: '请输入用户名!'}],
+                        })(
+                            <Input />
+                        )}
+                    </FormItem>
+                    <FormItem label="姓名">
+                        {getFieldDecorator('name',{
+                            rules: [{required: true, message: '请输入姓名!'}],
+                        })(<Input />)}
+                    </FormItem>
+                    <FormItem label="密&nbsp;&nbsp;&nbsp;&nbsp;码">
+                        {getFieldDecorator('password',{
+                            rules: [{required: true, message: '请输入密码!'}],
+                        })(<Input type="password" />)}
+                    </FormItem>
+                </Form>
+            </Modal>
+        )
     }
 }
 
@@ -204,34 +278,7 @@ const WrappedAdvancedSearchForm = Form.create({
 
         }
     }
-})((props) => {
-    const {getFieldDecorator, getFieldsValue, validateFields} = props.form;
-    console.log(validateFields)
-    return (
-        <Form layout="inline">
-            <FormItem label="用户名">
-                {getFieldDecorator('userName', {
-                    rules: [{required: true, message: 'Please input the title of collection!'}],
-                })(
-                    <Input />
-                )}
-            </FormItem>
-            <FormItem label="姓名">
-                {getFieldDecorator('name')(<Input />)}
-            </FormItem>
-            <FormItem className="collection-create-form_last-form-item">
-                {getFieldDecorator('sex', {
-                    initialValue: 'public',
-                })(
-                    <Radio.Group>
-                        <Radio value={1}>Public</Radio>
-                        <Radio value={2}>Private</Radio>
-                    </Radio.Group>
-                )}
-            </FormItem>
-        </Form>
-    )
-});
+})(UserForm);
 const mapStateToProps = (state, ownProps) => {
     return state;
 }

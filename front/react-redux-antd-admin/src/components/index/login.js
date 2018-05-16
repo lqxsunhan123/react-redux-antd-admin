@@ -1,7 +1,7 @@
 
 import React, {Component} from 'react';
 import {Row, Col} from 'antd';
-import fetch from '../../utils/fetchUtils'
+import {fetchPost} from '../../utils/fetchUtils'
 
 import {
     withRouter,
@@ -22,7 +22,7 @@ class NormalLoginForm extends React.Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                fetch( '/login', values, (r) => {
+                fetchPost( '/login', values, (r) => {
                     console.log(r.data.status);
                     let map = r.data;
                     if (map.status == 1) {

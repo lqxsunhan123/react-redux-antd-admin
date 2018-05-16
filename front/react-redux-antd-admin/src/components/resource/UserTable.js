@@ -4,7 +4,7 @@ import {Table} from 'antd';
 import {Pagination, Modal} from 'antd';
 import {Form, Row, Col, Input, Button, Radio} from 'antd';
 import {withRouter} from 'react-router'
-import fetch from '../../utils/fetchUtils'
+import {fetchPost} from '../../utils/fetchUtils'
 const FormItem = Form.Item;
 const columns = [{
     title: '用户名',
@@ -95,7 +95,7 @@ class UserTable extends React.Component {
         console.log("params: ")
         console.log(params);
         const pagination = {...this.state.pagination};
-        fetch(history, '/user/list', params, (r) => {
+        fetchPost(history, '/user/list', params, (r) => {
             let obj = r.data.data;
             pagination.total = obj.total;
             if (this._isMounted) {
@@ -108,7 +108,7 @@ class UserTable extends React.Component {
         }).catch(e => {
             console.log(e);
         })
-        // fetch(history, 'http://localhost:8081/re/user/save').then(r => {
+        // fetchPost(history, 'http://localhost:8081/re/user/save').then(r => {
         //     console.log(r);
         // })
     }

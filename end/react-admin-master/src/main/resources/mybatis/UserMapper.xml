@@ -5,7 +5,13 @@
         select * from t_sys_user where id = #{id}
     </select>
     <select id="queryByCreateId" resultType="com.sh.ram.pojo.User">
-        select id, user_name as userName from t_sys_user where deleted = 0 and create_user_id = #{createId}
+        select id, user_name as userName, name from t_sys_user where deleted = 0 and create_user_id = #{createId}
+        <if test="page.param.userName != null and page.param.userName != ''">
+            and user_name = #{page.param.userName}
+        </if>
+        <if test="page.param.name != null and page.param.name != ''">
+            and name = #{page.param.name}
+        </if>
         limit #{page.offset}, #{page.pageSize}
     </select>
 
@@ -14,14 +20,84 @@
     </select>
 
     <insert id="save" parameterType="com.sh.ram.entity.UserEntity">
-        insert into t_sys_user(user_name, password) values(#{userName}, #{password});
+        insert into t_sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="deleted != null">
+                deleted,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=INTEGER},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=INTEGER},
+            </if>
+        </trim>
     </insert>
 
     <insert id="update" parameterType="com.sh.ram.entity.UserEntity">
         update t_sys_user
         <set>
-            <if test="password != null and password != ''">
-                password = #{password},
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                update_user_id = #{updateUserId,jdbcType=INTEGER},
             </if>
         </set>
     </insert>

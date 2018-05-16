@@ -2,6 +2,7 @@ package com.sh.ram.common;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author sunh
@@ -21,9 +22,20 @@ public class Page<T> {
     // 总量
     private int total;
 
+    // 参数
+    private Map param;
+
+    public Map getParam() {
+        return param;
+    }
+
+    public void setParam(Map param) {
+        this.param = param;
+    }
+
     public Page(HttpServletRequest request){
-        pageSize = Integer.parseInt(request.getParameter("pageSize"));
-        currentPage = Integer.parseInt(request.getParameter("current"));
+        pageSize = request.getParameter("pageSize") == null ? 5 : Integer.parseInt(request.getParameter("pageSize"));
+        currentPage = request.getParameter("current") == null ? 1 : Integer.parseInt(request.getParameter("current"));
     }
 
     public Page(){}

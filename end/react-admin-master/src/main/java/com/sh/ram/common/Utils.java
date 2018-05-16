@@ -84,6 +84,12 @@ public class Utils {
         return s.append(year).append(month).append(day).append(hour).append(minute).append(second).append(millisecond).toString();
     }
 
+    /**
+     * 保存文件的方法
+     * @param type 1-移动端保存  2-后台保存
+     * @param multipartFile
+     * @return
+     */
     public static String saveFile(int type, MultipartFile multipartFile){
         String returnUri = null;
         try {
@@ -102,6 +108,7 @@ public class Utils {
                 file.mkdirs();
             }
             multipartFile.transferTo(new File(saveUri));
+            // 返回可访问的uri(http://ip地址/上下文         返回这里的 /img/app/sdfsfd.jpg)
             returnUri = type == Constant.SAVE_TYPE_APP ? Constant.APP_IMG_URI + "/" + newFileName : Constant.BACK_IMG_URI + "/" + newFileName;
         } catch (Exception e){
             e.printStackTrace();

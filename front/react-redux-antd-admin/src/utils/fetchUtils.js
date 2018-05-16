@@ -39,7 +39,7 @@ instance.interceptors.response.use(function (response) {
 });
 
 // 自定义的ajax请求方法，传入history对象方便路由
-const fetch = (url = '', data = {}, handle, option = {}) => {
+export const fetchPost = (url = '', data = {}, handle, option = {}) => {
     // 根据一些异常的响应代码做出动作
     console.log(url);
     console.log(data);
@@ -56,5 +56,21 @@ const fetch = (url = '', data = {}, handle, option = {}) => {
     });
 }
 
+export const fetchGet = (url = '', handle, option = {}) => {
+    return instance.get(url, option).then(r => {
+        if(r.data.code == 10000){
+            console.log("跳转首页")
+            // token失效，重新登录
+            localStorage.removeItem("token");
+            history.replace("/");
+        } else if(r.data.code == 10002){
+            // 权限不足
+            alert("权限不足，请联系管理员!")
+        }
+        handle(r)
+    }).catch((e) => {
+        alert(e);
+    });
+}
 
-export default fetch;
+

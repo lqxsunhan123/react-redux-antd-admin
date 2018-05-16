@@ -71,10 +71,24 @@ public class UserService extends BaseService {
             r.put(Constant.AUTH_TOKEN, obj.getToken());
         }
         // 保存用户uri信息的集合
-        List uriList = new ArrayList();
+        List<String> list = new ArrayList();
         // 获取用户的菜单信息
-        List<Resource> userMenus = getUserMenus(userId, uriList);
-        // 将用户拥有的url权限放进session中
+        List<Resource> userMenus = getUserMenus(userId, list);
+        // 存入缓存的用户访问权限信息
+        List<String> uriList = new ArrayList();
+
+        // 遍历,将有逗号的切割
+        for(String uri : list){
+            if(uri.contains(",")){
+                String[] arr = uri.split(",");
+                for(String u : arr){
+                    uriList.add(u);
+                }
+            } else {
+                uriList.add(uri);
+            }
+        }
+        // 将用户拥有的url权限放进session中(已经进行过,切割的)
         WebUtils.setSessionAttribute(request, Constant.AUTH_URI, uriList);
         // 将用户id放进session中
         WebUtils.setSessionAttribute(request, Constant.USER_ID, userId);
