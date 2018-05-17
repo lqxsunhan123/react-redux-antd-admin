@@ -96,7 +96,7 @@ class UserTable extends React.Component {
         console.log(params);
         const pagination = {...this.state.pagination};
         fetchPost(history, '/user/list', params, (r) => {
-            let obj = r.data.data;
+            let obj = r.data;
             pagination.total = obj.total;
             if (this._isMounted) {
                 this.setState({

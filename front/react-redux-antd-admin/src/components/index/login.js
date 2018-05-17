@@ -23,10 +23,8 @@ class NormalLoginForm extends React.Component {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 fetchPost( '/login', values, (r) => {
-                    console.log(r.data.status);
-                    let map = r.data;
-                    if (map.status == 1) {
-                        let d = map.data;
+                    if (r.status == 1) {
+                        let d = r.data;
                         localStorage.setItem("token", d.token);
                         localStorage.setItem("menus", JSON.stringify(d.menus));
                         this.setState({refer: true})

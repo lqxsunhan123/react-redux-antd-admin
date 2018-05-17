@@ -2,6 +2,7 @@ package com.sh.ram.service;
 
 import com.sh.ram.common.*;
 import com.sh.ram.entity.UserEntity;
+import com.sh.ram.entity.UserRoleEntity;
 import com.sh.ram.exception.Rexception;
 import com.sh.ram.mapper.ResourceMapper;
 import com.sh.ram.mapper.RoleMapper;
@@ -31,7 +32,7 @@ public class RoleService extends BaseService {
     private RoleMapper roleMapper;
 
     // 获取所有的角色name和id
-    public List<Map<String, Object>> getAllRoles(){
+    public List<UserRoleEntity> getAllRoles(){
         return roleMapper.getAllRoles();
     }
 

@@ -3,6 +3,7 @@ package com.sh.ram.controller;
 import com.sh.ram.common.Page;
 import com.sh.ram.common.R;
 import com.sh.ram.entity.UserEntity;
+import com.sh.ram.entity.UserRoleEntity;
 import com.sh.ram.pojo.User;
 import com.sh.ram.service.RoleService;
 import com.sh.ram.service.UserService;
@@ -65,7 +66,7 @@ public class UserController extends BaseController {
 
     @GetMapping("/getAllRoles")
     public Object getAllRoles(){
-        List<Map<String, Object>> allRoles = roleService.getAllRoles();
+        List<UserRoleEntity> allRoles = roleService.getAllRoles();
         return R.ok(allRoles);
     }
 

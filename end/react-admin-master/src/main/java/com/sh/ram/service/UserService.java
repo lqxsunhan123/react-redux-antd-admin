@@ -79,13 +79,15 @@ public class UserService extends BaseService {
 
         // 遍历,将有逗号的切割
         for(String uri : list){
-            if(uri.contains(",")){
-                String[] arr = uri.split(",");
-                for(String u : arr){
-                    uriList.add(u);
+            if(StringUtils.isNotEmpty(uri)) {
+                if (uri.contains(",")) {
+                    String[] arr = uri.split(",");
+                    for (String u : arr) {
+                        uriList.add(u);
+                    }
+                } else {
+                    uriList.add(uri);
                 }
-            } else {
-                uriList.add(uri);
             }
         }
         // 将用户拥有的url权限放进session中(已经进行过,切割的)

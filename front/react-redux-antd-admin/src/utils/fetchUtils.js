@@ -50,7 +50,8 @@ export const fetchPost = (url = '', data = {}, handle, option = {}) => {
             localStorage.removeItem("token");
             history.replace("/");
         }
-        handle(r)
+        // 这里因为axios返回值会自动包装成data，我们将其取出后返回
+        handle(r.data)
     }).catch((e) => {
         alert(e);
     });
@@ -67,7 +68,8 @@ export const fetchGet = (url = '', handle, option = {}) => {
             // 权限不足
             alert("权限不足，请联系管理员!")
         }
-        handle(r)
+        // 这里因为axios返回值会自动包装成data，我们将其取出后返回
+        handle(r.data)
     }).catch((e) => {
         alert(e);
     });

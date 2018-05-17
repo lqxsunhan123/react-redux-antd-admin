@@ -1,12 +1,13 @@
 import React from 'react';
 import '../../css/user.css';
 import {Table} from 'antd';
-import {Pagination, Modal} from 'antd';
+import {Pagination, Modal, Checkbox} from 'antd';
 import {Form, Row, Col, Input, Button, Radio} from 'antd';
 import {withRouter} from 'react-router'
 import {connect} from 'react-redux'
 import {getUsers} from '../../actions/user'
 import {fetchPost, fetchGet} from '../../utils/fetchUtils'
+const CheckboxGroup = Checkbox.Group
 const FormItem = Form.Item;
 const columns = [{
     title: '用户名',
@@ -42,7 +43,7 @@ class UserTable extends React.Component {
             selectedRows: 0,
             objs: [],
             flag: '',
-            allRoleIds:[], // 所有的角色id
+            allRoles:[], // 所有的角色
             userRoleIds:[] // 用户选择的角色id
         }
     }
@@ -54,18 +55,19 @@ class UserTable extends React.Component {
                 selectedRows: selectedRows.length,
                 objs: selectedRows
             })
-        },
-        getCheckboxProps: record => ({
-            disabled: record.name === 'Disabled User', // Column configuration not to be checked
-            name: record.name,
-        }),
+        }
     };
 
     handleOk = (obj) => {
-        fetchPost("/user/save", obj, r => {
-            console.log(r);
-
-        })
+        if(this.state.flag == 'add'){
+            fetchPost("/user/save", obj, r => {
+                console.log(r);
+            })
+        } else {
+            fetchPost("/user/update", obj, r => {
+                console.log(r);
+            })
+        }
 
         this.setState({
             visible: false
@@ -124,10 +126,13 @@ class UserTable extends React.Component {
     // 获取角色信息的方法,若传入了用户id，则还要查询用户对应的角色
     getRoles = (id) => {
         fetchGet("/user/getAllRoles", r => {
+            console.log(r)
+            this.setState({allRoles: r.data})
         })
         if(id){
             fetchGet("/user/getUserRoleIds?userId=" + id, r => {
-                console.log(r)
+                console.log(r);
+                this.setState({userRoleIds: r.data})
             })
         }
     }
@@ -150,7 +155,8 @@ class UserTable extends React.Component {
         if (this.state.selectedRows > 1) {
             alert("只能选择一行")
         } else {
-            // 获取所有角色信息以及该用户现在的角色信息
+            // 获取所有角色信息以及该用户现在的角色信息  this.state.objs[0].key是id
+            this.getRoles(this.state.objs[0].key);
             this.setState({
                 visible: true,
                 flag: 'edit'
@@ -179,11 +185,11 @@ class UserTable extends React.Component {
         return (
             <div>
 
-                    <WrappedAdvancedSearchForm visible={this.state.visible} handleOk={this.handleOk} handleCancel={this.handleCancel} flag={this.state.flag} />
+                    <WrappedAdvancedSearchForm obj={this.state.objs[0]} visible={this.state.visible} handleOk={this.handleOk} handleCancel={this.handleCancel} flag={this.state.flag} allRoles={this.state.allRoles} userRoleIds={this.state.userRoleIds} />
 
                 <Button className="mybtn" onClick={this.showAdd}>Add</Button>
                 <Button className="mybtn" onClick={this.showEdit}>Edit</Button>
-                <Button className="mybtn">Add</Button>
+                <Button className="mybtn">del</Button>
                 <Table rowSelection={this.rowSelection} columns={columns} dataSource={this.props.user.data} bordered={true}
                        pagination={this.props.user.pagination} onChange={this.handleTableChange}
                        loading={this.props.user.loading}  />
@@ -217,8 +223,12 @@ class UserForm extends React.Component{
 
     render(){
         const {getFieldDecorator} = this.props.form;
-        const{handleOk, handleCancel, flag} = this.props;
-
+        let{allRoles, userRoleIds, flag, obj} = this.props;
+        // 如果是添加的话，则把用户的角色id删掉
+        if(flag == 'add'){
+            userRoleIds = [];
+            obj = {};
+        }
         return (
             <Modal
                 title="Basic Modal"
@@ -245,6 +255,9 @@ class UserForm extends React.Component{
                             rules: [{required: true, message: '请输入密码!'}],
                         })(<Input type="password" />)}
                     </FormItem>
+                    <FormItem label="角色" style={{display:'block',marginLeft:26}}>
+                        {getFieldDecorator('roleIds', {initialValue:userRoleIds}) (<CheckboxGroup options={allRoles} />)}
+                    </FormItem>
                 </Form>
             </Modal>
         )
@@ -265,17 +278,19 @@ const WrappedAdvancedSearchForm = Form.create({
     mapPropsToFields(props){
         console.log("mapPropsToFields:")
         console.log(props);
-        return {
-            id: Form.createFormField({
-                value: props.key
-            }),
-            userName: Form.createFormField({
-                value: props.userName
-            }),
-            name: Form.createFormField({
-                value: props.name
-            }),
-
+        let obj = props.obj;
+        if(props.flag == 'add'){
+            obj = {};
+        }
+        if(obj != null){
+            return {
+                userName: Form.createFormField({
+                    value: obj.userName
+                }),
+                name: Form.createFormField({
+                    value: obj.name
+                }),
+            }
         }
     }
 })(UserForm);
