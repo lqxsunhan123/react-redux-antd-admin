@@ -3,35 +3,43 @@
 <mapper namespace="com.sh.ram.mapper.ResourceMapper" >
 
     <select id="queryRootMenuByUserId" resultType="com.sh.ram.pojo.Resource">
-        select * from t_sys_resource tsr
-        right join
-        (
-        select tsrr.resource_id from t_sys_role_resource tsrr
-        right join
-        (
-        select role_id from t_sys_user_role tsur
-        where tsur.user_id = #{userId}
-        ) as a
-        on tsrr.role_id = a.role_id
-        ) as b
-        on tsr.id = b.resource_id
-        where tsr.type = #{type} and parent_id = #{rootId}
+
+        <choose>
+            <when test="userId != null">
+                select distinct tsr.* from t_sys_user_role tsur
+                left join
+                t_sys_role_resource tsrr
+                on tsur.role_id = tsrr.role_id
+                left join t_sys_resource tsr
+                on tsrr.resource_id = tsr.id
+                where tsr.type = #{type} and parent_id = #{rootId}
+                and tsur.user_id = #{userId}
+            </when>
+            <otherwise>
+                select distinct * from t_sys_resource
+                where type = #{type} and parent_id = #{rootId}
+            </otherwise>
+        </choose>
     </select>
 
     <select id="queryChildMenuByParentId" resultType="com.sh.ram.pojo.Resource">
-        select * from t_sys_resource tsr
-        right join
-        (
-        select tsrr.resource_id from t_sys_role_resource tsrr
-        right join
-        (
-        select role_id from t_sys_user_role tsur
-        where tsur.user_id = #{userId}
-        ) as a
-        on tsrr.role_id = a.role_id
-        ) as b
-        on tsr.id = b.resource_id
-        where tsr.parent_id = #{parentId}
+
+        <choose>
+            <when test="userId != null">
+                select distinct tsr.* from t_sys_user_role tsur
+                left join
+                t_sys_role_resource tsrr
+                on tsur.role_id = tsrr.role_id
+                left join t_sys_resource tsr
+                on tsrr.resource_id = tsr.id
+                where tsr.parent_id = #{parentId}
+                and tsur.user_id = #{userId}
+            </when>
+            <otherwise>
+                select distinct * from t_sys_resource
+                where parent_id = #{parentId}
+            </otherwise>
+        </choose>
     </select>
 
 </mapper>

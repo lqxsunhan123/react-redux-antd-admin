@@ -19,7 +19,7 @@
         select count(id) from t_sys_user where deleted = 0 and create_user_id = #{createId}
     </select>
 
-    <insert id="save" parameterType="com.sh.ram.entity.UserEntity">
+    <insert id="save" parameterType="com.sh.ram.entity.UserEntity" useGeneratedKeys="true" keyProperty="id">
         insert into t_sys_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userName != null">
@@ -78,9 +78,6 @@
     <insert id="update" parameterType="com.sh.ram.entity.UserEntity">
         update t_sys_user
         <set>
-            <if test="id != null">
-                id = #{id,jdbcType=INTEGER},
-            </if>
             <if test="userName != null">
                 user_name = #{userName,jdbcType=VARCHAR},
             </if>
@@ -100,6 +97,7 @@
                 update_user_id = #{updateUserId,jdbcType=INTEGER},
             </if>
         </set>
+        where id = #{id}
     </insert>
 
     <delete id="del">
@@ -108,4 +106,17 @@
             #{id}
         </foreach>
     </delete>
+
+    <insert id="saveUserRole">
+        insert into t_sys_user_role(user_id, role_id) values 
+        <foreach collection="roleIds" separator="," item="id">
+            (#{userId}, #{id})
+        </foreach>
+    </insert>
+
+    <delete id="delUseRole">
+        delete from t_sys_user_role
+        where user_id = #{userId}
+    </delete>
+
 </mapper>

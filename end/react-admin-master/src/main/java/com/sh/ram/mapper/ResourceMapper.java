@@ -17,12 +17,12 @@ public interface ResourceMapper {
      * @param userId
      * @return
      */
-    List<Resource> queryRootMenuByUserId(@Param("userId") int userId, @Param("type") int type, @Param("rootId") int rootId);
+    List<Resource> queryRootMenuByUserId(@Param("userId") Integer userId, @Param("type") int type, @Param("rootId") int rootId);
 
     /**
      * 根据父菜单id查询子菜单
      * @param parentId
      * @return
      */
-    List<Resource> queryChildMenuByParentId(@Param("parentId") int parentId, @Param("userId") int userId);
+    List<Resource> queryChildMenuByParentId(@Param("parentId") int parentId, @Param("userId") Integer userId);
 }

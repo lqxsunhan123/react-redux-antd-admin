@@ -29,4 +29,19 @@ public interface UserMapper {
     int update(UserEntity userEntity);
 
     int del(@Param("ids") int[] ids);
+
+    /**
+     * 保存用户的角色信息
+     * @param userId
+     * @param roleIds
+     * @return
+     */
+    int saveUserRole(@Param("userId") int userId, @Param("roleIds") Integer[] roleIds);
+
+    /**
+     * 删除用户的角色id
+     * @param userId
+     * @return
+     */
+    int delUseRole(@Param("userId") Integer userId);
 }

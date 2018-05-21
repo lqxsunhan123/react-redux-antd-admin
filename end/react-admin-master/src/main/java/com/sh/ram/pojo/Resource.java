@@ -20,6 +20,16 @@ public class Resource extends Base {
 
     private Integer type;
 
+    private String perm;
+
+    public String getPerm() {
+        return perm;
+    }
+
+    public void setPerm(String perm) {
+        this.perm = perm;
+    }
+
     public Integer getType() {
         return type;
     }

@@ -70,57 +70,53 @@ public class UserService extends BaseService {
             tokenMapper.update(obj);
             r.put(Constant.AUTH_TOKEN, obj.getToken());
         }
-        // 保存用户uri信息的集合
+        // 保存用户权限信息的集合
         List<String> list = new ArrayList();
         // 获取用户的菜单信息
         List<Resource> userMenus = getUserMenus(userId, list);
-        // 存入缓存的用户访问权限信息
-        List<String> uriList = new ArrayList();
 
-        // 遍历,将有逗号的切割
-        for(String uri : list){
-            if(StringUtils.isNotEmpty(uri)) {
-                if (uri.contains(",")) {
-                    String[] arr = uri.split(",");
-                    for (String u : arr) {
-                        uriList.add(u);
-                    }
-                } else {
-                    uriList.add(uri);
-                }
-            }
-        }
-        // 将用户拥有的url权限放进session中(已经进行过,切割的)
-        WebUtils.setSessionAttribute(request, Constant.AUTH_URI, uriList);
+        // 将用户拥有的权限放进session中(已经进行过,切割的)
+        WebUtils.setSessionAttribute(request, Constant.AUTH_PERM, list);
         // 将用户id放进session中
         WebUtils.setSessionAttribute(request, Constant.USER_ID, userId);
         r.put("menus", userMenus);
+        r.put("perms", list);
         return R.ok(r);
     }
 
     /**
-     * 获取用户对应菜单的方法,并获取用户所有的uri
+     * 获取用户对应菜单的方法,并获取用户所有的权限
      * @param userId
-     * @param uriList
+     * @param permList
      * @return
      */
-    List<Resource> getUserMenus(int userId, List uriList){
-        // 用户所有的根菜单
-        List<Resource> rootMenus = resourceMapper.queryRootMenuByUserId(userId, Constant.RESOURCE_TYPE_MENU, Constant.MENU_ROOT_ID);
-        List<Resource> menus = menus(rootMenus, userId, uriList);
+    List<Resource> getUserMenus(Integer userId, List permList){
+        // 用户所有的根菜单(超级管理员获取所有)
+        List<Resource> rootMenus = resourceMapper.queryRootMenuByUserId(userId == Constant.SUPER_ADMIN_ID ? null : userId, Constant.RESOURCE_TYPE_MENU, Constant.MENU_ROOT_ID);
+        List<Resource> menus = menus(rootMenus, userId == Constant.SUPER_ADMIN_ID ? null : userId, permList);
         return menus;
     }
     // 递归获取
-    private List<Resource> menus(List<Resource> list, int userId, List uriList){
+    private List<Resource> menus(List<Resource> list, Integer userId, List permList){
         List childs = new ArrayList();
         for(Resource resource : list){
             // 根据根菜单id查询用户相应的子菜单
             List<Resource> childList = resourceMapper.queryChildMenuByParentId(resource.getId(), userId);
             if(childList != null && childList.size() > 0){
-                List l = menus(childList, userId, uriList);
+                List l = menus(childList, userId, permList);
                 resource.setSub(l);
             }
-            uriList.add(resource.getPath());
+            // 添加权限,如果有逗号的,需要把逗号切割
+            if(StringUtils.isNotEmpty(resource.getPerm())) {
+                if(resource.getPerm().contains(",")){
+                    String[] perms = resource.getPerm().split(",");
+                    for(String perm : perms){
+                        permList.add(perm);
+                    }
+                } else {
+                    permList.add(resource.getPerm());
+                }
+            }
             childs.add(resource);
         }
         return childs;
@@ -140,13 +136,29 @@ public class UserService extends BaseService {
     }
 
     public void save(UserEntity userEntity){
+        // 保存基本信息
         Integer id = userMapper.save(userEntity);
         checkOperate(id);
+        // 根据id保存角色信息
+        if(userEntity.getRoleIds() != null) {
+            int i = userMapper.saveUserRole(userEntity.getId(), userEntity.getRoleIds());
+            checkOperate(i);
+        }
     }
 
     public void update(UserEntity userEntity){
+        if(StringUtils.isNotEmpty(userEntity.getPassword())) {
+            userEntity.setPassword(Utils.md5(userEntity.getPassword()));
+        }
         int c = userMapper.update(userEntity);
         checkOperate(c);
+        // 删除用户原有的角色信息在保存
+        userMapper.delUseRole(userEntity.getId());
+        // 上面不进行验证,因为用户可能没有角色,导致删除后返回成功数为0
+        if(userEntity.getRoleIds() != null) {
+            int i = userMapper.saveUserRole(userEntity.getId(), userEntity.getRoleIds());
+            checkOperate(i);
+        }
     }
 
     public void del(int[] ids){

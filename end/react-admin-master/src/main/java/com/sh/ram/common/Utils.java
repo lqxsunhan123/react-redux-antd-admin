@@ -1,5 +1,6 @@
 package com.sh.ram.common;
 
+import com.sh.ram.pojo.Base;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -114,6 +115,17 @@ public class Utils {
             e.printStackTrace();
         }
         return returnUri;
+    }
+
+    public static void setObjectCreateBaseData(Base base, int createUserId){
+        base.setCreateUserId(createUserId);
+        base.setDeleted(0);
+        base.setCreateTime(new Date());
+    }
+
+    public static void setObjectUpdateBaseData(Base base, int updateUserId){
+        base.setUpdateUserId(updateUserId);
+        base.setUpdateTime(new Date());
     }
 
 

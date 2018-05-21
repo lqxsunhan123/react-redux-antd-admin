@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50718
 File Encoding         : 65001
 
-Date: 2018-05-10 19:00:06
+Date: 2018-05-21 20:25:46
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,7 +33,7 @@ CREATE TABLE `t_sys_resource` (
   `create_user_id` int(11) DEFAULT NULL,
   `update_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of t_sys_resource
@@ -42,10 +42,15 @@ INSERT INTO `t_sys_resource` VALUES ('1', '基础管理', 'setting', '0', null, 
 INSERT INTO `t_sys_resource` VALUES ('2', '用户管理', 'user', '1', '/user', '2', null, '0', '2018-04-25 17:39:30', '2018-04-25 17:39:30', null, null);
 INSERT INTO `t_sys_resource` VALUES ('3', '角色管理', 'up-circle-o', '1', '/', '2', null, '0', '2018-04-25 17:39:36', '2018-04-25 17:39:36', null, null);
 INSERT INTO `t_sys_resource` VALUES ('4', '资源管理', 'up-circle-o', '1', '/resource', '2', null, '0', '2018-04-25 17:39:58', '2018-04-25 17:39:58', null, null);
-INSERT INTO `t_sys_resource` VALUES ('5', '查看', null, '2', '/user/list', '3', 'user-select', '0', '2018-04-27 16:50:55', '2018-04-27 16:50:55', null, null);
-INSERT INTO `t_sys_resource` VALUES ('6', '修改', null, '2', '/user/update', '3', 'user-update', '0', '2018-04-27 16:51:05', '2018-04-27 16:51:05', null, null);
-INSERT INTO `t_sys_resource` VALUES ('7', '新增', null, '2', '/user/save', '3', 'user-save', '0', '2018-04-27 16:51:20', '2018-04-27 16:51:20', null, null);
-INSERT INTO `t_sys_resource` VALUES ('8', '删除', null, '2', '/user/del', '3', 'user-del', '0', '2018-04-27 16:51:32', '2018-04-27 16:51:32', null, null);
+INSERT INTO `t_sys_resource` VALUES ('5', '查看', null, '2', null, '3', 'user-select', '0', '2018-04-27 16:50:55', '2018-04-27 16:50:55', null, null);
+INSERT INTO `t_sys_resource` VALUES ('6', '修改', null, '2', null, '3', 'user-update', '0', '2018-04-27 16:51:05', '2018-04-27 16:51:05', null, null);
+INSERT INTO `t_sys_resource` VALUES ('7', '新增', null, '2', null, '3', 'user-save', '0', '2018-04-27 16:51:20', '2018-04-27 16:51:20', null, null);
+INSERT INTO `t_sys_resource` VALUES ('8', '删除', null, '2', null, '3', 'user-del', '0', '2018-04-27 16:51:32', '2018-04-27 16:51:32', null, null);
+INSERT INTO `t_sys_resource` VALUES ('9', '获取角色信息', null, '7', null, '3', 'user-role-get', '0', '2018-05-16 17:36:43', '2018-05-16 17:36:43', null, null);
+INSERT INTO `t_sys_resource` VALUES ('10', '查看', null, '4', null, '3', 'resource-select', '0', '2018-05-21 17:38:03', '2018-05-21 17:38:03', null, null);
+INSERT INTO `t_sys_resource` VALUES ('11', '修改', null, '4', null, '3', 'resource-update', '0', '2018-05-21 17:38:11', '2018-05-21 17:38:11', null, null);
+INSERT INTO `t_sys_resource` VALUES ('12', '新增', null, '4', null, '3', 'resource-save', '0', '2018-05-21 17:38:15', '2018-05-21 17:38:15', null, null);
+INSERT INTO `t_sys_resource` VALUES ('13', '删除', null, '4', null, '3', 'resource-del', '0', '2018-05-21 17:38:21', '2018-05-21 17:38:21', null, null);
 
 -- ----------------------------
 -- Table structure for t_sys_role
@@ -78,19 +83,11 @@ CREATE TABLE `t_sys_role_resource` (
   `role_id` int(11) DEFAULT NULL,
   `resource_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of t_sys_role_resource
 -- ----------------------------
-INSERT INTO `t_sys_role_resource` VALUES ('1', '1', '1');
-INSERT INTO `t_sys_role_resource` VALUES ('2', '1', '2');
-INSERT INTO `t_sys_role_resource` VALUES ('3', '1', '4');
-INSERT INTO `t_sys_role_resource` VALUES ('5', '1', '3');
-INSERT INTO `t_sys_role_resource` VALUES ('6', '1', '5');
-INSERT INTO `t_sys_role_resource` VALUES ('7', '1', '6');
-INSERT INTO `t_sys_role_resource` VALUES ('8', '1', '7');
-INSERT INTO `t_sys_role_resource` VALUES ('9', '1', '9');
 
 -- ----------------------------
 -- Table structure for t_sys_token
@@ -107,12 +104,13 @@ CREATE TABLE `t_sys_token` (
   `create_user_id` int(11) DEFAULT NULL,
   `update_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of t_sys_token
 -- ----------------------------
-INSERT INTO `t_sys_token` VALUES ('1', '1', 'sss', '2018-05-11 05:11:12', '0', '2018-05-10 17:11:12', '2018-05-10 17:11:12', '0', '0');
+INSERT INTO `t_sys_token` VALUES ('1', '1', 'sss', '2018-05-22 07:24:05', '0', '2018-05-21 19:24:05', '2018-05-21 19:24:05', '0', '0');
+INSERT INTO `t_sys_token` VALUES ('2', '2', '4058c4abfad24b5f8e863982be8cc095', '2018-05-22 03:15:28', '0', '2018-05-21 15:15:28', '2018-05-21 15:15:28', '0', '0');
 
 -- ----------------------------
 -- Table structure for t_sys_user
@@ -120,31 +118,40 @@ INSERT INTO `t_sys_token` VALUES ('1', '1', 'sss', '2018-05-11 05:11:12', '0', '
 DROP TABLE IF EXISTS `t_sys_user`;
 CREATE TABLE `t_sys_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
+  `user_name` varchar(32) DEFAULT NULL,
+  `password` varchar(32) DEFAULT NULL,
+  `name` varchar(32) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `create_user_id` int(11) DEFAULT NULL,
   `update_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of t_sys_user
 -- ----------------------------
-INSERT INTO `t_sys_user` VALUES ('1', 'admin', '21232f297a57a5a743894a0e4a801fc3', '0', '2018-04-25 17:11:28', '2018-04-25 17:11:28', null, null);
-INSERT INTO `t_sys_user` VALUES ('2', 'fangfang', null, '0', '2018-04-27 17:08:50', '2018-04-27 17:08:50', '1', null);
-INSERT INTO `t_sys_user` VALUES ('3', 'jingjing', null, '0', '2018-04-27 17:08:56', '2018-04-27 17:08:56', '1', null);
-INSERT INTO `t_sys_user` VALUES ('4', 'mingming', null, '0', '2018-04-27 17:09:01', '2018-04-27 17:09:01', '1', null);
-INSERT INTO `t_sys_user` VALUES ('5', 'mingming1', null, '0', '2018-05-01 20:54:11', '2018-05-01 20:54:11', '1', null);
-INSERT INTO `t_sys_user` VALUES ('6', 'mingming2', null, '0', '2018-05-01 20:54:14', '2018-05-01 20:54:14', '1', null);
-INSERT INTO `t_sys_user` VALUES ('7', 'mingming3', null, '0', '2018-05-01 20:54:17', '2018-05-01 20:54:17', '1', null);
-INSERT INTO `t_sys_user` VALUES ('8', 'mingming4', null, '0', '2018-05-01 20:54:20', '2018-05-01 20:54:20', '1', null);
-INSERT INTO `t_sys_user` VALUES ('9', 'mingming5', null, '0', '2018-05-01 20:54:23', '2018-05-01 20:54:23', '1', null);
-INSERT INTO `t_sys_user` VALUES ('10', 'mingming6', null, '0', '2018-05-01 20:54:26', '2018-05-01 20:54:26', '1', null);
-INSERT INTO `t_sys_user` VALUES ('11', 'mingming7', null, '0', '2018-05-01 20:54:29', '2018-05-01 20:54:29', '1', null);
-INSERT INTO `t_sys_user` VALUES ('12', 'mingming8', null, '0', '2018-05-01 20:54:32', '2018-05-01 20:54:32', '1', null);
+INSERT INTO `t_sys_user` VALUES ('1', 'admin', '21232f297a57a5a743894a0e4a801fc3', null, '0', '2018-04-25 17:11:28', '2018-04-25 17:11:28', null, null);
+INSERT INTO `t_sys_user` VALUES ('2', 'fangfang', '202cb962ac59075b964b07152d234b70', 'fangfang1', '0', '2018-04-27 17:08:50', '2018-05-21 15:15:19', '1', '1');
+INSERT INTO `t_sys_user` VALUES ('3', 'jingjing', '202cb962ac59075b964b07152d234b70', 'jingjing 啊', '0', '2018-04-27 17:08:56', '2018-05-21 16:27:51', '1', '1');
+INSERT INTO `t_sys_user` VALUES ('4', 'mingming', null, 'mingming', '1', '2018-04-27 17:09:01', '2018-04-27 17:09:01', '1', null);
+INSERT INTO `t_sys_user` VALUES ('5', 'mingming1', null, 'mingming2', '1', '2018-05-01 20:54:11', '2018-05-21 16:19:02', '1', '1');
+INSERT INTO `t_sys_user` VALUES ('6', 'mingming2', null, null, '0', '2018-05-01 20:54:14', '2018-05-01 20:54:14', '1', null);
+INSERT INTO `t_sys_user` VALUES ('7', 'mingming3', null, null, '0', '2018-05-01 20:54:17', '2018-05-01 20:54:17', '1', null);
+INSERT INTO `t_sys_user` VALUES ('8', 'mingming4', null, null, '0', '2018-05-01 20:54:20', '2018-05-01 20:54:20', '1', null);
+INSERT INTO `t_sys_user` VALUES ('9', 'mingming5', null, null, '0', '2018-05-01 20:54:23', '2018-05-01 20:54:23', '1', null);
+INSERT INTO `t_sys_user` VALUES ('10', 'mingming6', null, null, '0', '2018-05-01 20:54:26', '2018-05-01 20:54:26', '1', null);
+INSERT INTO `t_sys_user` VALUES ('11', 'mingming7', null, null, '0', '2018-05-01 20:54:29', '2018-05-01 20:54:29', '1', null);
+INSERT INTO `t_sys_user` VALUES ('12', 'mingming8', null, null, '0', '2018-05-01 20:54:32', '2018-05-01 20:54:32', '1', null);
+INSERT INTO `t_sys_user` VALUES ('13', 'admin', 'admin', 'f', '0', '2018-05-16 16:50:28', '2018-05-16 16:50:28', '0', '0');
+INSERT INTO `t_sys_user` VALUES ('14', 'admin', 'admin', 'as', '0', '2018-05-17 14:20:02', '2018-05-17 14:20:02', '0', '0');
+INSERT INTO `t_sys_user` VALUES ('15', 'admin', 'admin', 'd', '0', '2018-05-17 14:34:50', '2018-05-17 14:34:50', '0', '0');
+INSERT INTO `t_sys_user` VALUES ('16', 'g', 'g', 'g', '0', '2018-05-17 14:45:35', '2018-05-17 14:45:35', '0', '0');
+INSERT INTO `t_sys_user` VALUES ('17', 'sunh', '123456', '孙涵', '0', '2018-05-18 16:03:57', '2018-05-18 16:03:57', '0', '0');
+INSERT INTO `t_sys_user` VALUES ('18', '111', '111', '111', '0', '2018-05-18 17:06:22', '2018-05-18 17:06:22', '1', '0');
+INSERT INTO `t_sys_user` VALUES ('19', '222', '222', '222', '0', '2018-05-18 17:08:16', '2018-05-18 17:08:16', '1', '0');
+INSERT INTO `t_sys_user` VALUES ('20', 'fff', 'fff', 'fffgg', '0', '2018-05-18 17:12:42', '2018-05-18 18:19:49', '1', '1');
 
 -- ----------------------------
 -- Table structure for t_sys_user_role
@@ -155,13 +162,18 @@ CREATE TABLE `t_sys_user_role` (
   `user_id` int(11) DEFAULT NULL,
   `role_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of t_sys_user_role
 -- ----------------------------
 INSERT INTO `t_sys_user_role` VALUES ('1', '1', '2');
 INSERT INTO `t_sys_user_role` VALUES ('2', '1', '1');
+INSERT INTO `t_sys_user_role` VALUES ('13', '20', '1');
+INSERT INTO `t_sys_user_role` VALUES ('14', '20', '2');
+INSERT INTO `t_sys_user_role` VALUES ('20', '2', '2');
+INSERT INTO `t_sys_user_role` VALUES ('21', '5', '2');
+INSERT INTO `t_sys_user_role` VALUES ('22', '3', '2');
 
 -- ----------------------------
 -- Procedure structure for generateCommonField

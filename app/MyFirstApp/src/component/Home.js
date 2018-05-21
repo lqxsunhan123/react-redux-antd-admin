@@ -6,16 +6,22 @@
 
 import React, { Component } from 'react';
 import {
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-Alert,
+    Alert,
+    Platform,
+    StyleSheet,
+    Text,
+    View,
     Dimensions,
     TouchableOpacity,
     TouchableHighlight,
-Button,Image
+    Button,Image,PixelRatio
 } from 'react-native';
+import { NativeModules } from 'react-native';
+
+// 下一句中的ToastExample即对应上文
+// public String getName()中返回的字符串
+
+const Badge = NativeModules.Badge;
 
 export default class Home extends Component {
 
@@ -34,29 +40,90 @@ export default class Home extends Component {
         super(props)
     }
     state={
-
+        count: 1
     }
 
-  render() {
-    return (
-        <View style={styles.container}>
-            <Button  title="页面1" style={{width:90,height:40}}   onPress={() => this.props.navigation.navigate('Component1')} />
-            <Button title="页面2"  style={{width:40,height:40}} onPress={() => this.props.navigation.navigate('Component2')} />
-            <Button title="页面3" style={{width:40,height:40}}  onPress={() => this.props.navigation.navigate('Component3')} />
-        </View>
-    );
-  }
+    updateBadge = () => {
+        console.log(Badge);
+        Badge.showBadge(this.state.count);
+        let c = this.state.count + 1;
+        this.setState({count: c})
+    }
+
+    a = () => {
+        Alert.alert("ss")
+    }
+
+    render() {
+        return (
+            <View style={styles.container}>
+                <View style={{width:190,height:30,marginTop:10}}>
+                    <Button title="扫描收货"   onPress={() => this.props.navigation.navigate('ScanDelivery')} />
+                </View>
+                <View style={{width:190,height:30,marginTop:10}}>
+                    <Button title="扫描入库"   onPress={() => this.updateBadge()} />
+                </View>
+                <View style={{width:190,height:30,marginTop:10}}>
+                    <Button title="扫描出库"   onPress={() => this.a} />
+                </View>
+                <View style={{width:190,height:30,marginTop:10}}>
+                    <Button title="扫描盘点"   onPress={() => this.props.navigation.navigate('Home')} />
+                </View>
+                <View style={{width:190,height:30,marginTop:10}}>
+                    <Button title="移库操作"   onPress={() => this.props.navigation.navigate('Home')} />
+                </View>
+                <View style={{width:190,height:40,marginTop:10}}>
+                    <Button title="退出"
+                            color="red"  onPress={() => this.props.navigation.navigate('Home')} />
+                </View>
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: 'center',
-        flexDirection: 'row',
+        // justifyContent: 'center',
         alignItems:'center',
-        width:300,
-        height:100,
-        borderWidth:5
     },
+    leftBox:{
+        flex:3,
+        flexDirection: 'row',
+        borderWidth:1,
+        borderColor:'red',
+        alignItems:'center',
+        justifyContent:'space-around',
+        flexWrap:'nowrap'
+        // padding:5
+    },
+    rightBox:{
+        flex:1,
+        flexDirection: 'column',
+        // padding:5
+    },
+    box1:{
+        // flex:2
+        // width:60,
+        // height:30
+        // marginRight:5
+        flexShrink:0
+    },
+    box2:{
+        // flex:2
+        // width:60,
+        // height:30
+
+    },
+    box3:{
+        // flex:2
+        width:50,
+        height:50
+    },
+    box4:{
+        width:50,
+        height:50
+    },
+    box5:{},
     welcome: {
         fontSize: 20,
         textAlign: 'center',

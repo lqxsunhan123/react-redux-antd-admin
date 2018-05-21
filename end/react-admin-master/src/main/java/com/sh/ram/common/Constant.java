@@ -12,6 +12,11 @@ public class Constant {
     public static final String PROJECT_NAME = "ram";
 
     /**
+     * 超级管理员id
+     */
+    public static final int SUPER_ADMIN_ID = 1;
+
+    /**
      * 移动端文件,后台文件保存路径
      */
     public static final String APP_FILE_PATH = System.getProperty("user.home") + "/" + PROJECT_NAME + "/app/img/";
@@ -33,7 +38,7 @@ public class Constant {
      * 验证的token和用户的url权限以及用户id
      */
     public static final String AUTH_TOKEN = "token";
-    public static final String AUTH_URI = "uri";
+    public static final String AUTH_PERM = "perm";
     public static final String USER_ID = "userId";
     /**
      * token有效期12小时

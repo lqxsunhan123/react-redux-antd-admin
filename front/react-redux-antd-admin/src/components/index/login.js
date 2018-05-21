@@ -8,6 +8,7 @@ import {
     Redirect,
 } from 'react-router-dom'
 import {Form, Icon, Input, Button, Checkbox} from 'antd';
+import {config} from '../../constants/config'
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
@@ -22,11 +23,19 @@ class NormalLoginForm extends React.Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
+                console.log(values)
                 fetchPost( '/login', values, (r) => {
                     if (r.status == 1) {
                         let d = r.data;
+                        // 计算出token过期时间
+                        let date = new Date();
+                        date.setTime(date.getTime() + config.tokenValidTime);
+                        localStorage.setItem("expireDate", date.getTime().toString())
                         localStorage.setItem("token", d.token);
+                        // 因为localStorage只能存储字符串类型,所以我们只能把menus转换成json字符串,取出时在JSON.parse
                         localStorage.setItem("menus", JSON.stringify(d.menus));
+                        // 权限信息
+                        localStorage.setItem("perms", JSON.stringify(d.perms));
                         this.setState({refer: true})
                     }
                 }).catch(e => {

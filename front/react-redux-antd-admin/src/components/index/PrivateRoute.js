@@ -6,18 +6,21 @@ import {
     Route,
     Redirect,
 } from 'react-router-dom'
-import {Icon} from 'antd';
+import {Icon,Row, Col} from 'antd';
 import MyTabContainer from '../../components/MyTab'
+import {history} from '../../constants/config'
 const {Header, Sider, Content} = Layout;
-
+//设置cookie
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
 class PrivateRoute extends Component {
 
     constructor(props) {
         super(props);
-        const panes = [
-            { title: 'Tab 1', content: 'Content of Tab Pane 1', key: '1' },
-            { title: 'Tab 2', content: 'Content of Tab Pane 2', key: '2' },
-        ];
         this.state = {
             // collapsed: true,
             // panes,
@@ -27,42 +30,36 @@ class PrivateRoute extends Component {
     }
 
 
-    // onChange = (activeKey) => {
-    //     this.setState({ activeKey });
-    // }
-    // onEdit = (targetKey, action) => {
-    //     this[action](targetKey);
-    // }
-    // add = () => {
-    //     const panes = this.state.panes;
-    //     const activeKey = `newTab${this.newTabIndex++}`;
-    //     panes.push({ title: 'New Tab', content: 'New Tab Pane', key: activeKey });
-    //     this.setState({ panes, activeKey });
-    // }
-    // remove = (targetKey) => {
-    //     let activeKey = this.state.activeKey;
-    //     let lastIndex;
-    //     this.state.panes.forEach((pane, i) => {
-    //         if (pane.key === targetKey) {
-    //             lastIndex = i - 1;
-    //         }
-    //     });
-    //     const panes = this.state.panes.filter(pane => pane.key !== targetKey);
-    //     if (lastIndex >= 0 && activeKey === targetKey) {
-    //         activeKey = panes[lastIndex].key;
-    //     }
-    //     this.setState({ panes, activeKey });
-    // }
+   logout = () => {
+       localStorage.removeItem("token");
+       localStorage.removeItem("expireDate");
+       localStorage.removeItem("menus");
+       setCookie('JSESSIONID', "", -1);
+       history.replace("login");
+   }
 
     render() {
         const {component: Component, ...rest}  = this.props;
+        let flag = true;
+
+        // 获取token
         const token = localStorage.getItem("token")
+        if (token != null) {
+            // 获取token过期时间
+            const expireDate = parseFloat(localStorage.getItem("expireDate"));
+
+            let now = new Date();
+            if (expireDate < now.getTime()) {
+                // token过期
+                flag = false;
+            }
+        } else {
+            flag = false;
+        }
         return (
             <Route {...rest} render={props => {
-                 const {history} = props;
-
                 return (
-                    token != null ? (
+                    flag ? (
                         <Layout>
                             <Sider
                                 trigger={null}
@@ -75,14 +72,22 @@ class PrivateRoute extends Component {
                             </Sider>
                             <Layout>
                                 <Header style={{backgroundColor: '#3C8DBC', padding: 0}}>
-                                    <Icon
-                                        className="trigger"
-                                        type={this.props.collapsed ? 'menu-unfold' : 'menu-fold'}
-                                        onClick={this.props.toggle}
-                                    />
+                                 <Row type="flex" justify="space-between">
+                                     <Col>
+                                         <Icon
+                                             className="trigger"
+                                             type={this.props.collapsed ? 'menu-unfold' : 'menu-fold'}
+                                             onClick={this.props.toggle}
+                                         />
+
+                                     </Col>
+                                     <Col>
+                                         <Icon type="logout"  className="trigger" title="退出" onClick={this.logout} />
+                                     </Col>
+                                 </Row>
                                 </Header>
 
-                                <MyTabContainer history={history}/>
+                                <MyTabContainer/>
 
                                 <Content style={{position:'relative',bottom:'16px', padding: 24, background: '#fff', minHeight: 280}}>
                                     <Component {...props}/>
@@ -101,7 +106,7 @@ class PrivateRoute extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return {collapsed: state.collapsed};
+    return {collapsed: state.tab.collapsed};
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

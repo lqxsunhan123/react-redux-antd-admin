@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Tabs, Button} from 'antd';
 import { connect } from 'react-redux'
 import {toggleTab, removeTab} from '../actions/tab'
-import {history} from '../constants/config'
 const TabPane = Tabs.TabPane;
 
 
@@ -15,7 +14,7 @@ class MyTab extends Component {
     onChange = (activeKey) => {
         // const {history} = this.props;
         // console.log(history)
-        this.props.toggleTab(activeKey, history);
+        this.props.toggleTab(activeKey);
         // history.replace(activeKey)
     }
     onEdit = (targetKey, action) => {
@@ -23,7 +22,7 @@ class MyTab extends Component {
     }
     remove = (targetKey) => {
         // const {history} = this.props;
-        this.props.removeTab(targetKey, history);
+        this.props.removeTab(targetKey);
     }
 
     render() {
@@ -44,15 +43,13 @@ const mapStateToProps = (state, ownProps) => {
     return {
         tabs: state.tab.tabs,
         activeKey: state.tab.activityKey,
-        history: ownProps.history
     }
 }
 //
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    toggleTab: (activityKey, history) => dispatch(toggleTab(activityKey, history)),
-    removeTab: (targetKey, history) => {
-        console.log(targetKey)
-        dispatch(removeTab(targetKey, history))
+    toggleTab: (activityKey) => dispatch(toggleTab(activityKey)),
+    removeTab: (targetKey) => {
+        dispatch(removeTab(targetKey))
     }
 })
 

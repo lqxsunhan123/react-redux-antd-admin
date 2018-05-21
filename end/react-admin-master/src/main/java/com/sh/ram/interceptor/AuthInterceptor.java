@@ -1,5 +1,6 @@
 package com.sh.ram.interceptor;
 
+import com.sh.ram.annotations.HasPermission;
 import com.sh.ram.annotations.IgnoreAuth;
 import com.sh.ram.common.APIReturnData;
 import com.sh.ram.common.Constant;
@@ -16,6 +17,7 @@ import org.springframework.web.util.WebUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.annotation.Annotation;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +47,12 @@ public class AuthInterceptor implements HandlerInterceptor {
             // 如果有忽略token注解则直接放行
             return true;
         }
+
+
+
+
         // 暂时省略cookie的判断
         Cookie[] cookies = request.getCookies();
-
         // 获取token
         String token = request.getHeader(Constant.AUTH_TOKEN);
         // 判断token是否为null
@@ -57,22 +62,53 @@ public class AuthInterceptor implements HandlerInterceptor {
             if(r != null && r.size() > 0) {
                 Date date = (Date) r.get("expireDate");
                 if (date.getTime() - new Date().getTime() > 0) {
-                    // 判断用户访问的url是否在用户的请求权限中
+//                    // 判断用户访问的url是否在用户的请求权限中
+//
+//                    // 从缓存获取用户的uri集合
+//                    List uriList = (List)WebUtils.getSessionAttribute(request, Constant.AUTH_URI);
+//                    if(uriList == null){
+//                        setCros(response);
+//                        throw new Rexception(APIReturnData.SERVER_CODE_10000, APIReturnData.STATUS_FAIL, APIReturnData.SERVER_MSG_10000);
+//                    }
+//
+//                    // 判断用户访问的url是否在集合中
+//                    boolean contains = uriList.contains(requestURI);
+//                    if(!contains){
+//                        setCros(response);
+//                        // 没有权限
+//                        throw new Rexception(APIReturnData.SERVER_CODE_10002, APIReturnData.STATUS_FAIL, APIReturnData.SERVER_MSG_10002);
+//                    }
 
-                    // 从缓存获取用户的uri集合
-                    List uriList = (List)WebUtils.getSessionAttribute(request, Constant.AUTH_URI);
-                    if(uriList == null){
-                        setCros(response);
-                        throw new Rexception(APIReturnData.SERVER_CODE_10000, APIReturnData.STATUS_FAIL, APIReturnData.SERVER_MSG_10000);
+                    /**
+                     * 权限的判断
+                     */
+                    HasPermission h = method.getMethodAnnotation(HasPermission.class);
+                    if(h != null){
+                        // 从缓存获取用户权限集合
+                        List permList = (List)WebUtils.getSessionAttribute(request, Constant.AUTH_PERM);
+                        // 获取注解的值
+                        String value = h.value();
+                        if(StringUtils.isNotEmpty(value)){
+                            if(value.contains(",")){
+                                // 切割
+                                String[] perms = value.split(",");
+                                // 遍历查看
+                                for(String perm : perms){
+                                    boolean hasPermission = permList.contains(perm);
+                                    if(! hasPermission){
+                                        throw new Rexception(APIReturnData.SERVER_CODE_10002, APIReturnData.STATUS_FAIL, APIReturnData.SERVER_MSG_10002);
+                                    }
+                                }
+                            } else {
+                                // 查看用户是否拥有权限
+                                boolean hasPermission = permList.contains(value);
+                                if(! hasPermission){
+                                    throw new Rexception(APIReturnData.SERVER_CODE_10002, APIReturnData.STATUS_FAIL, APIReturnData.SERVER_MSG_10002);
+                                }
+                            }
+                        }
                     }
 
-                    // 判断用户访问的url是否在集合中
-                    boolean contains = uriList.contains(requestURI);
-                    if(!contains){
-                        setCros(response);
-                        // 没有权限
-                        throw new Rexception(APIReturnData.SERVER_CODE_10002, APIReturnData.STATUS_FAIL, APIReturnData.SERVER_MSG_10002);
-                    }
                     return true;
                 }
             }
