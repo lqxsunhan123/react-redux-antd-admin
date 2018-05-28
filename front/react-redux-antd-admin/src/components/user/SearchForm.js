@@ -2,35 +2,22 @@ import React from 'react';
 import '../../css/user.css';
 import {Form, Row, Col, Input, Button, Icon} from 'antd';
 import {connect} from 'react-redux'
-import {getUsers} from '../../actions/user'
+import {requestData} from '../../actions/page'
 const FormItem = Form.Item;
 class AdvancedSearchForm extends React.Component {
-    state = {
-        expand: false,
-    };
-
-    // static defaultProps = {
-    //     supplier: 'sss'
-    // }
 
     handleSearch = (e) => {
         e.preventDefault();
         console.log(this.props)
         this.props.form.validateFields((err, values) => {
             console.log(values);
-            this.props.getUsers({}, values);
+            this.props.requestData("/user/list", {}, values);
         });
     }
 
     handleReset = () => {
         this.props.form.resetFields();
     }
-
-    toggle = () => {
-        const {expand} = this.state;
-        this.setState({expand: !expand});
-    }
-
 
     render() {
         console.log(this.props);
@@ -72,17 +59,10 @@ class AdvancedSearchForm extends React.Component {
 
 const WrappedAdvancedSearchForm = Form.create({
     onFieldsChange(props, changedFields) {
-        console.log("onFieldsChange:")
-        console.log(props);
-        console.log(changedFields);
     },
     onValuesChange(props, _value){
-        console.log("onValuesChange:")
-       console.log(props);
     },
     mapPropsToFields(props){
-        console.log("mapPropsToFields:")
-        console.log(props);
         return{}
     }
 })(AdvancedSearchForm);
@@ -96,7 +76,7 @@ const mapStateToProps = (state, ownProps) => {
 //
 const mapDispatchToProps = (dispatch, ownProps) => ({
     // 获取用户的方法，接收分页器和查询参数
-    getUsers: (pagination, params) => dispatch(getUsers(pagination, params)),
+    requestData: (url, pagination, params) => dispatch(requestData(url, pagination, params)),
 })
 
 export default connect(

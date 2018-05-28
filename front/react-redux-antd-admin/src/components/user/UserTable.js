@@ -4,12 +4,11 @@ import {Table} from 'antd';
 import {Pagination, Modal, Checkbox} from 'antd';
 import {Form, Row, Col, Input, Button, Radio} from 'antd';
 import {connect} from 'react-redux'
-import {getUsers} from '../../actions/user'
+import {requestData, changeCheckBox} from '../../actions/page'
 import {fetchPost, fetchGet} from '../../utils/fetchUtils'
-import {checkSelectedRows, checkSingleRows, wrapIds} from '../../utils/Utils'
-import {HasPermission} from '../common'
+import { checkSingleRows, delData} from '../../utils/Utils'
+import {HasPermission, MyTable} from '../common/index'
 const CheckboxGroup = Checkbox.Group
-const confirm = Modal.confirm;
 const FormItem = Form.Item;
 const columns = [{
     title: '用户名',
@@ -33,31 +32,20 @@ class UserTable extends React.Component {
         super(props);
         this.state = {
             visible: false,
-            selectedRowKeys: [],
-            objs: [],
             flag: '',
             allRoles: [], // 所有的角色
             userRoleIds: [] // 用户选择的角色id
         }
     }
 
+    /**
+     * 展示删除数据的modal
+     */
     showConfirm = () => {
-        const {selectedRowKeys} = this.state;
-        console.log(selectedRowKeys)
-        checkSelectedRows(selectedRowKeys, () => {
-            confirm({
-                title: '你确实想删除选择项吗？',
-                okText: '确认',
-                cancelText: '取消',
-                onOk() {
-                    fetchPost("/user/del", {ids:selectedRowKeys}, r => {
-                        this.clearCheckboxAndRequestUser();
-                    })
-                },
-                onCancel() {
-                    console.log('Cancel');
-                },
-            });
+        const {selectedRowKeys} = this.props.page;
+        // 删除数据
+        delData(selectedRowKeys, "/user/del", () => {
+            this.clearCheckboxAndRequestUser();
         })
     }
 
@@ -81,69 +69,27 @@ class UserTable extends React.Component {
     clearCheckboxAndRequestUser = () => {
         this.setState({
             visible: false,
-            selectedRowKeys: []
         })
-        this.props.getUsers();
+        // 将selectedRowKeys和selectedRows设为空
+        this.props.changeCheckBox([],[]);
+        // 请求数据
+        this.props.requestData("/user/list");
     }
 
     handleCancel = () => {
-        console.log("cancel")
         this.setState({
             visible: false
         })
     }
 
-    handleTableChange = (pagination, filters, sorter) => {
-        // console.log(pagination);
-        // console.log(filters);
-        // console.log(sorter);
-        const pager = {...this.props.user.pagination};
-        pager.current = pagination.current;
-        // this.setState({
-        //     pagination: pager,
-        //     loading: true
-        // });
-        // this.fetch({
-        //     pageSize: pagination.pageSize,
-        //     current: pagination.current,
-        //     sortField: sorter.field,
-        //     sortOrder: sorter.order,
-        //     ...filters,
-        // });
-        console.log(pager);
-        this.props.getUsers(pager)
-    }
-    fetch = (params = {current: 1, pageSize: 5}) => {
-        console.log("params: ")
-        console.log(params);
-        const pagination = {...this.state.pagination};
-        fetchPost('/user/list', params, (r) => {
-            let obj = r.data.data;
-            pagination.total = obj.total;
-            if (this._isMounted) {
-                this.setState({
-                    data: obj.result,
-                    pagination: pagination,
-                    loading: false
-                })
-            }
-        }).catch(e => {
-            console.log(e);
-        })
-        // fetch(history, 'http://localhost:8081/re/user/save').then(r => {
-        //     console.log(r);
-        // })
-    }
 
     // 获取角色信息的方法,若传入了用户id，则还要查询用户对应的角色
     getRoles = (id) => {
         fetchGet("/user/getAllRoles", r => {
-            console.log(r)
             this.setState({allRoles: r.data})
         })
         if (id) {
             fetchGet("/user/getUserRoleIds?userId=" + id, r => {
-                console.log(r);
                 this.setState({userRoleIds: r.data})
             })
         }
@@ -160,9 +106,10 @@ class UserTable extends React.Component {
     }
 
     showEdit = () => {
-        checkSingleRows(this.state.selectedRowKeys, () => {
+        // 检查用户选取的行数,如果通过则执行自定义的方法
+        checkSingleRows(this.props.page.selectedRowKeys, () => {
             // 获取所有角色信息以及该用户现在的角色信息  this.state.objs[0].key是id
-            this.getRoles(this.state.objs[0].key);
+            this.getRoles(this.props.page.obj.key);
             this.setState({
                 visible: true,
                 flag: 'edit'
@@ -172,51 +119,34 @@ class UserTable extends React.Component {
 
 
     componentWillMount() {
-        this._isMounted = true;
-        this.props.getUsers();
     }
 
     componentWillUnmount() {
-        this._isMounted = false
     }
 
-    onSelectChange = (selectedRowKeys, selectedRows) => {
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-        console.log(selectedRowKeys.length)
-        this.setState({
-            objs: selectedRows,
-            selectedRowKeys: selectedRowKeys
-        })
-    }
+
 
     render() {
-        const selectedRowKeys = this.state.selectedRowKeys;
-        const rowSelection = {
-            selectedRowKeys,
-            onChange: this.onSelectChange
-        };
         return (
             <div>
 
-                <WrappedAdvancedSearchForm obj={this.state.objs[0]} visible={this.state.visible}
+                <WrappedAdvancedSearchForm obj={this.props.page.obj} visible={this.state.visible}
                                            handleOk={this.handleOk} handleCancel={this.handleCancel}
                                            flag={this.state.flag} allRoles={this.state.allRoles}
                                            userRoleIds={this.state.userRoleIds}/>
-
-
                 <HasPermission component={ <Button className="mybtn" onClick={this.showAdd}>Add</Button> } perms="user-save" />
                 <HasPermission component={ <Button className="mybtn" onClick={this.showEdit}>Edit</Button> } perms="user-update" />
                 <HasPermission component={ <Button className="mybtn" onClick={this.showConfirm}>del</Button> } perms="user-del" />
-                <Table rowSelection={rowSelection} columns={columns} dataSource={this.props.user.data} bordered={true}
-                       pagination={this.props.user.pagination} onChange={this.handleTableChange}
-                       loading={this.props.user.loading}/>
+                <MyTable url="/user/list" columns={columns} />
             </div>
         );
     }
 }
 
 
-
+/**
+ * 用户新增时的表单
+ */
 class UserForm extends React.Component {
 
     constructor(props) {
@@ -225,14 +155,20 @@ class UserForm extends React.Component {
     }
 
     handleOk = () => {
-        const {handleOk} = this.props;
+        const {handleOk, flag} = this.props;
         this.props.form.validateFields((e, obj) => {
             if (!e) {
-                // 这里需要为对象加上id字段
-                handleOk({...obj, id: this.props.obj.key});
+                let o = obj;
+                // 如果是更新,这里需要为对象加上id字段
+                console.log(obj);
+                console.log(this.props.obj)
+                if(flag == 'edit'){
+                    o = {...obj, key: this.props.obj.key}
+                }
+                console.log(o)
+                handleOk(o);
             }
         })
-        // this.props.form.resetFields();
     }
 
     handleCancel = () => {
@@ -240,18 +176,18 @@ class UserForm extends React.Component {
         this.props.handleCancel();
     }
 
-
     render() {
         const {getFieldDecorator} = this.props.form;
         let {allRoles, userRoleIds, flag, obj} = this.props;
         let passwordRules = {}
         // 编辑的时候,密码不为必选项,导致那个红色的提示不在,所以需要价格样式让页面与原来效果一致
         let passwordStyle = {marginLeft: "10px"}
+        // 编辑的时候userName是禁止修改的
         let disabled = true;
         // 如果是添加的话，则把用户的角色id删掉
         if (flag == 'add') {
             disabled = false;
-            // 添加的话把用户的角色id和用户信息都清楚掉
+            // 添加的话把用户的角色id和用户信息都清除掉
             userRoleIds = [];
             obj = {};
             // 添加的时候密码是必选的
@@ -294,22 +230,19 @@ class UserForm extends React.Component {
 }
 
 const WrappedAdvancedSearchForm = Form.create({
+    // 字段发生变化时  changedFields变化的字段的详细信息
     onFieldsChange(props, changedFields) {
-        console.log("onFieldsChange:")
-        console.log(props);
-        console.log(changedFields);
     },
+    // 值发生变化时,_value 变化的字段
     onValuesChange(props, _value){
-        console.log("onValuesChange:")
-        console.log(props);
-        console.log(_value)
     },
+    // 映射字段到表单上
     mapPropsToFields(props){
-        console.log("mapPropsToFields:")
-        console.log(props);
+        // 对象
         let obj = props.obj;
         if (props.flag == 'add') {
-            obj = {};
+            // 如果是添加则不映射数据
+            obj = null;
         }
         if (obj != null) {
             return {
@@ -324,17 +257,17 @@ const WrappedAdvancedSearchForm = Form.create({
     }
 })(UserForm);
 const mapStateToProps = (state, ownProps) => {
-    return state;
+    return {
+        page: state.page
+    };
 }
 //
 const mapDispatchToProps = (dispatch, ownProps) => ({
     // 获取用户的方法，接收分页器和查询参数
-    getUsers: (pagination, params) => dispatch(getUsers(pagination, params)),
+    requestData: (url, pagination, params) => dispatch(requestData(url, pagination, params)),
+    changeCheckBox: (selectedRowKeys, selectedRows) => dispatch(changeCheckBox(selectedRowKeys, selectedRows))
 })
-
 export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(UserTable)
-
-// export default withRouter(UserTable);

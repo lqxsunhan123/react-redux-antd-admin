@@ -6,17 +6,15 @@ import UserTable from './UserTable'
 class UserComponent extends React.Component {
 
     render() {
-        const {history} = this.props;
-        const filed = {supplier: '111', supplier1: '222'}
         return (
                 <Row>
                     <Col span={24}>
                         <Card title="Card title" bordered={true}>
                             <Col span={24}>
-                                <SearchForm {...filed} history={history} />
+                                <SearchForm />
                             </Col>
                             <Col span={24} style={{marginTop: '10px'}}>
-                                <UserTable history={history} />
+                                <UserTable />
                             </Col>
                         </Card>
                     </Col>

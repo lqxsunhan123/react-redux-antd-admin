@@ -9,7 +9,7 @@ import {
 import {Icon,Row, Col} from 'antd';
 import MyTabContainer from '../../components/MyTab'
 import {history} from '../../constants/config'
-const {Header, Sider, Content} = Layout;
+const {Header, Sider, Content, Footer} = Layout;
 //设置cookie
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
@@ -35,7 +35,8 @@ class PrivateRoute extends Component {
        localStorage.removeItem("expireDate");
        localStorage.removeItem("menus");
        setCookie('JSESSIONID', "", -1);
-       history.replace("login");
+       window.location.href = "/";
+
    }
 
     render() {
@@ -72,26 +73,30 @@ class PrivateRoute extends Component {
                             </Sider>
                             <Layout>
                                 <Header style={{backgroundColor: '#3C8DBC', padding: 0}}>
-                                 <Row type="flex" justify="space-between">
-                                     <Col>
-                                         <Icon
-                                             className="trigger"
-                                             type={this.props.collapsed ? 'menu-unfold' : 'menu-fold'}
-                                             onClick={this.props.toggle}
-                                         />
+                                    <Row type="flex" justify="space-between">
+                                        <Col>
+                                            <Icon
+                                                className="trigger"
+                                                type={this.props.collapsed ? 'menu-unfold' : 'menu-fold'}
+                                                onClick={this.props.toggle}
+                                            />
 
-                                     </Col>
-                                     <Col>
-                                         <Icon type="logout"  className="trigger" title="退出" onClick={this.logout} />
-                                     </Col>
-                                 </Row>
+                                        </Col>
+                                        <Col>
+                                            <Icon type="logout" className="trigger" title="退出" onClick={this.logout}/>
+                                        </Col>
+                                    </Row>
                                 </Header>
 
                                 <MyTabContainer/>
 
-                                <Content style={{position:'relative',bottom:'16px', padding: 24, background: '#fff', minHeight: 280}}>
+                                <Content style={{position:'relative',bottom:16, padding: 24, background: '#fff', minHeight: 280}}>
                                     <Component {...props}/>
                                 </Content>
+
+                                <Footer style={{ textAlign: 'center' }}>
+                                    Ant Design ©2016 Created by Ant UED
+                                </Footer>
                             </Layout>
                         </Layout>
                     ) : (

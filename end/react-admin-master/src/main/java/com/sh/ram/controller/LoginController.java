@@ -26,7 +26,8 @@ public class LoginController {
     @RequestMapping("/login")
     @IgnoreAuth
     public Object login(String userName, String password){
-        return userService.login(userName, password);
+        R r = userService.login(userName, password);
+        return r;
     }
 
     @RequestMapping("/uploadImg")

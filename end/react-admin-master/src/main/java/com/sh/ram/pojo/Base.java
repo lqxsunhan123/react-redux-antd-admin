@@ -1,6 +1,8 @@
 package com.sh.ram.pojo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 
@@ -13,8 +15,12 @@ public class Base {
     @JSONField(name = "key")
     protected int id;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JSONField(name = "createTime", format = "yyyy-MM-dd HH:mm:ss")
     protected Date createTime = new Date();
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JSONField(name = "createTime", format = "yyyy-MM-dd HH:mm:ss")
     protected Date updateTime = new Date();
 
     protected int createUserId;
@@ -69,6 +75,18 @@ public class Base {
 
     public void setUpdateUserId(int updateUserId) {
         this.updateUserId = updateUserId;
+    }
+
+    @Override
+    public String toString() {
+        return "Base{" +
+                "id=" + id +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", createUserId=" + createUserId +
+                ", updateUserId=" + updateUserId +
+                ", deleted=" + deleted +
+                '}';
     }
 }
 

@@ -80,6 +80,9 @@ public class UserService extends BaseService {
         // 将用户id放进session中
         WebUtils.setSessionAttribute(request, Constant.USER_ID, userId);
         r.put("menus", userMenus);
+
+        // 菜单手动加入首页
+
         r.put("perms", list);
         return R.ok(r);
     }

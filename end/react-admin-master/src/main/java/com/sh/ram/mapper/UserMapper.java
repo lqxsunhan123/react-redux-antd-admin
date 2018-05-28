@@ -13,7 +13,7 @@ import java.util.Map;
  * @author sunh
  * @date 2018\4\25 0025 12:31
  */
-public interface UserMapper {
+public interface UserMapper extends BaseMapper<UserEntity> {
 
     Map<String, Object> queryById(@Param("id") int id);
 
@@ -23,12 +23,6 @@ public interface UserMapper {
     List<User> queryByCreateId(@Param("createId") int userId, @Param("page") Page page);
 
     int countUserByCreateId(@Param("createId") int userId);
-
-    Integer save(UserEntity userEntity);
-
-    int update(UserEntity userEntity);
-
-    int del(@Param("ids") int[] ids);
 
     /**
      * 保存用户的角色信息

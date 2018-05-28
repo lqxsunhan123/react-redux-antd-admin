@@ -103,6 +103,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                                 // 查看用户是否拥有权限
                                 boolean hasPermission = permList.contains(value);
                                 if(! hasPermission){
+                                    setCros(response);
                                     throw new Rexception(APIReturnData.SERVER_CODE_10002, APIReturnData.STATUS_FAIL, APIReturnData.SERVER_MSG_10002);
                                 }
                             }

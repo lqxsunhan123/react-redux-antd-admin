@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom'
 import UserComponent from '../user'
 import ResourceComponent from '../resource'
+import RoleComponent from '../role'
 import PrivateRoute from './PrivateRoute'
 import WrappedNormalLoginForm from './login'
 import {history} from '../../constants/config'
@@ -36,7 +37,7 @@ export default (props) => (
                 <PrivateRoute exact path="/" component={IndexComponent}></PrivateRoute>
                 <PrivateRoute exact path="/user" component={UserComponent}></PrivateRoute>
                 <PrivateRoute exact path="/resource" component={ResourceComponent}></PrivateRoute>
-                <PrivateRoute exact path="/role" component={UserComponent}></PrivateRoute>
+                <PrivateRoute exact path="/role" component={RoleComponent}></PrivateRoute>
             </Switch>
         </div>
     </Router>)

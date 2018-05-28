@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sh.ram.mapper.ResourceMapper" >
 
+    <!-- 根据用户id查询根菜单,如果用户id为null,说明是超级管理员 -->
     <select id="queryRootMenuByUserId" resultType="com.sh.ram.pojo.Resource">
 
         <choose>
@@ -13,15 +14,17 @@
                 left join t_sys_resource tsr
                 on tsrr.resource_id = tsr.id
                 where tsr.type = #{type} and parent_id = #{rootId}
+                and tsr.deleted = 0
                 and tsur.user_id = #{userId}
             </when>
             <otherwise>
                 select distinct * from t_sys_resource
-                where type = #{type} and parent_id = #{rootId}
+                where type = #{type} and parent_id = #{rootId} and deleted = 0
             </otherwise>
         </choose>
     </select>
 
+    <!-- 根据父级id查询菜单,如果用户id为null,说明是超级管理员 -->
     <select id="queryChildMenuByParentId" resultType="com.sh.ram.pojo.Resource">
 
         <choose>
@@ -34,12 +37,198 @@
                 on tsrr.resource_id = tsr.id
                 where tsr.parent_id = #{parentId}
                 and tsur.user_id = #{userId}
+                and tsr.deleted = 0
             </when>
             <otherwise>
                 select distinct * from t_sys_resource
-                where parent_id = #{parentId}
+                where parent_id = #{parentId} and deleted = 0
             </otherwise>
         </choose>
     </select>
 
+    <!-- 资源列表所用map -->
+    <resultMap id="listMap" type="com.sh.ram.vo.ResourceVo">
+        <id property="id" column="id" />
+        <result property="text" column="text" />
+        <result property="perm" column="perm" />
+        <result property="path" column="path" />
+        <result property="icon" column="icon" />
+        <result property="parentId" column="parentId" />
+        <result property="type" column="type" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="createTime" />
+        <collection property="sub"  ofType="com.sh.ram.vo.ResourceVo" select="getResourceByParentId" column="id" />
+    </resultMap>
+
+    <!-- 生成树形选择所用map -->
+    <resultMap id="treeMap" type="com.sh.ram.vo.ResourceTreeVo">
+        <id property="id" column="id" />
+        <result property="value" column="id" />
+        <result property="text" column="text" />
+        <result property="parentId" column="parentId" />
+        <collection property="sub"  ofType="com.sh.ram.vo.ResourceTreeVo" select="getAllResource" column="id" />
+    </resultMap>
+
+    <!-- 根据父菜单id查询, 可以生成一个父子关系自关联的list -->
+    <select id="getResourceByParentId" resultMap="listMap" parameterType="int">
+           SELECT
+                tsr.id,
+                text,
+                icon,
+                path,
+                type,
+                perm,
+                parent_id as parentId,
+              tsu.name as creator,
+              tsr.create_time as createTime
+            FROM
+                t_sys_resource tsr
+            left join t_sys_user tsu on tsr.create_user_id = tsu.id
+            where tsr.parent_id = #{id} and tsr.deleted = 0
+    </select>
+
+    <!-- 生成树形选择菜单 -->
+    <select id="getAllResource" resultMap="treeMap" parameterType="int">
+          SELECT
+                id,
+                text,
+                parent_id as parentId
+            FROM
+                t_sys_resource
+            where parent_id = #{id} and deleted = 0
+    </select>
+
+    <!-- 获取角色对应的资源id - name -->
+    <select id="getRoleResources" resultType="java.util.Map" parameterType="int">
+        select cast(resource_id as char) as value, text as label
+        from t_sys_role_resource tsrr
+        left join t_sys_resource tsr
+        on tsrr.resource_id = tsr.id
+        where role_id = #{id}
+    </select>
+
+    <!-- 生成资源树时使用  简单数据格式 -->
+    <select id="getSimpleResourceTree" resultType="com.sh.ram.vo.SimpleResourceTreeVo">
+        select
+        0 as rootId,
+        parent_id as parentId,
+        id,
+        text as label,
+        id as value
+        from t_sys_resource
+    </select>
+
+    <insert id="save" parameterType="com.sh.ram.entity.ResourceEntity" >
+        insert into t_sys_resource
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="text != null" >
+                text,
+            </if>
+            <if test="icon != null" >
+                icon,
+            </if>
+            <if test="parentId != null" >
+                parent_id,
+            </if>
+            <if test="path != null" >
+                path,
+            </if>
+            <if test="type != null" >
+                type,
+            </if>
+            <if test="perm != null" >
+                perm,
+            </if>
+            <if test="deleted != null" >
+                deleted,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="createUserId != null" >
+                create_user_id,
+            </if>
+            <if test="updateUserId != null" >
+                update_user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="text != null" >
+                #{text,jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null" >
+                #{icon,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null" >
+                #{parentId,jdbcType=INTEGER},
+            </if>
+            <if test="path != null" >
+                #{path,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null" >
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="perm != null" >
+                #{perm,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null" >
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null" >
+                #{createUserId,jdbcType=INTEGER},
+            </if>
+            <if test="updateUserId != null" >
+                #{updateUserId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.sh.ram.entity.ResourceEntity" >
+        update t_sys_resource
+        <set >
+            <if test="text != null" >
+                text = #{text,jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null" >
+                icon = #{icon,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null" >
+                parent_id = #{parentId,jdbcType=INTEGER},
+            </if>
+            <if test="path != null" >
+                path = #{path,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null" >
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="perm != null" >
+                perm = #{perm,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null" >
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null" >
+                update_user_id = #{updateUserId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="del">
+        update t_sys_resource set deleted = 1 where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

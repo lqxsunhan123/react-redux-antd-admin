@@ -5,8 +5,7 @@ import com.sh.ram.common.Page;
 import com.sh.ram.common.R;
 import com.sh.ram.common.Utils;
 import com.sh.ram.entity.UserEntity;
-import com.sh.ram.entity.UserRoleEntity;
-import com.sh.ram.pojo.User;
+import com.sh.ram.vo.UserRoleVo;
 import com.sh.ram.service.RoleService;
 import com.sh.ram.service.UserService;
 import org.slf4j.Logger;
@@ -15,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +47,6 @@ public class UserController extends BaseController {
         p.setParam(param);
         // 获取当前用户的id
         Integer userId = currentUserId(request);
-        int a = 10 / 0;
         // 查询当前用户创建的用户
         Page page = userService.queryAll(userId, p);
         R r = R.ok(page);
@@ -86,7 +82,7 @@ public class UserController extends BaseController {
     @GetMapping("/getAllRoles")
     @HasPermission("user-role-get")
     public Object getAllRoles(){
-        List<UserRoleEntity> allRoles = roleService.getAllRoles();
+        List<UserRoleVo> allRoles = roleService.getAllRoles();
         return R.ok(allRoles);
     }
 

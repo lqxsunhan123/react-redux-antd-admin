@@ -8,19 +8,16 @@ import java.util.HashMap;
  */
 public class R extends HashMap {
 
-
     private R(int code, int status, String msg, Object data){
-        super.put("code", code);
-        super.put("status", status);
-        super.put("msg", msg);
-        super.put("data", data);
+        this(code, status, msg);
+        this.put("data", data);
     }
 
 
     public R(int code, int status, String msg){
-        super.put("code", code);
-        super.put("status", status);
-        super.put("msg", msg);
+        this.put("code", code);
+        this.put("status", status);
+        this.put("msg", msg);
     }
 
 

@@ -1,5 +1,9 @@
+import {Modal} from 'antd';
+import {fetchPost} from './fetchUtils'
+const confirm = Modal.confirm;
+
 /**
- * 在表格中操作时,应至少选择一行
+ * 在表格中操作时,应至少选择一行的确认方法
  * @param selectedRowKeys
  * @param handle
  * @returns {boolean}
@@ -31,13 +35,29 @@ const checkSingleRows = (selectedRowKeys, handle) => {
     }
 }
 
-const wrapIds = (ids) => {
-    let formData = new FormData();
-    for(let id of ids){
-        formData.append("ids[]", id);
-    }
-    return formData;
+/**
+ * 删除数据的基础方法
+ * @param ids    删除数据的id数组
+ * @param url    删除的路径
+ * @param handle 删除完成后执行的方法
+ */
+const delData = (ids = [], url = '', handle = () => {}) => {
+    checkSelectedRows(ids, () => {
+        confirm({
+            title: '你确实想删除选择项吗？',
+            okText: '确认',
+            cancelText: '取消',
+            onOk() {
+                fetchPost(url, {ids:ids}, r => {
+                  handle();
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    })
 }
 
-export {checkSelectedRows, checkSingleRows, wrapIds}
+export {checkSelectedRows, checkSingleRows, delData}
 

@@ -1,3 +1,6 @@
+import MyTable from './MyTable'
+
+
 /**
  * 一个校验用户权限的组件
  * @param component 需要渲染的组件
@@ -11,4 +14,9 @@ const HasPermission = ({component, perms}) => {
     }
     return null;
 }
-export {HasPermission}
+
+
+export {
+    MyTable,
+    HasPermission
+}

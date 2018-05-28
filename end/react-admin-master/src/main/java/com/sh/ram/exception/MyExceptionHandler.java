@@ -21,9 +21,19 @@ public class MyExceptionHandler {
     @ExceptionHandler(value = Rexception.class)
     @ResponseBody
     public Object handleRexception(Rexception exception){
-        logger.error(" ------- 发生业务异常: code:{}, msg:{}, status:{} ------ ", exception.getCode(), exception.getMsg(), exception.getStatus());
+        logger.error(" ------- 发生业务异常开始: code:{}, msg:{}, status:{} ------ ", exception.getCode(), exception.getMsg(), exception.getStatus());
         exception.printStackTrace();
+        logger.error(" ------- 发生业务异常结束 ------ ");
         return new R(exception.getCode(), exception.getStatus(), exception.getMsg());
+    }
+
+    @ExceptionHandler(value = RuntimeException.class)
+    @ResponseBody
+    public Object handleRuntimeException(RuntimeException r){
+        logger.error(" ------- 发生运行时异常开始:msg:{} ------ ", r.getMessage());
+        r.printStackTrace();
+        logger.error(" ------- 发生运行时异常结束 ------ ");
+        return R.fail();
     }
 }
 
